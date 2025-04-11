@@ -10,26 +10,30 @@ export module moderna.generic:static_string;
 
 namespace moderna::generic {
   export enum struct padding_type { front, back };
-  template <size_t N, bool is_mutable> class static_string_view {
+  export template <size_t N, bool is_mutable> class static_string_view {
     using pointer_type = std::conditional_t<is_mutable, char *, const char *>;
     pointer_type __beg;
     pointer_type __end;
 
   public:
     constexpr static_string_view(pointer_type beg, pointer_type end) : __beg{beg}, __end{end} {}
+    constexpr static_string_view(const static_string_view<N, false> &s) :
+      __beg{s.__beg}, __end{s.__end} {}
 
     // Getters
     constexpr std::optional<std::reference_wrapper<const char>> operator[](size_t id
     ) const noexcept {
       if (id < N) {
-        return std::cref(__beg + id);
+        return std::cref(*(__beg + id));
       } else {
         return std::nullopt;
       }
     }
-    constexpr std::optional<std::reference_wrapper<char>> operator[](size_t id) noexcept {
+    constexpr std::optional<std::reference_wrapper<char>> operator[](size_t id) noexcept
+      requires(is_mutable)
+    {
       if (id < N) {
-        return std::ref(__beg + id);
+        return std::ref(*(__beg + id));
       } else {
         return std::nullopt;
       }
@@ -56,7 +60,7 @@ namespace moderna::generic {
     // String Operations
     template <size_t begin_pos, size_t length>
     constexpr static_string_view<length, is_mutable> substr() noexcept
-      requires(begin_pos + length < N)
+      requires(begin_pos + length <= N)
     {
       return static_string_view<length, is_mutable>{
         begin() + begin_pos, begin() + begin_pos + length
@@ -64,7 +68,7 @@ namespace moderna::generic {
     }
     template <size_t begin_pos, size_t length>
     constexpr static_string_view<length, false> substr() const noexcept
-      requires(begin_pos + length < N)
+      requires(begin_pos + length <= N)
     {
       return static_string_view<length, false>{begin() + begin_pos, begin() + begin_pos + length};
     }
@@ -73,6 +77,33 @@ namespace moderna::generic {
     }
     constexpr std::string as_string() const {
       return std::string{begin(), begin() + N};
+    }
+    template <size_t beg>
+    constexpr static_string_view<N, is_mutable> &emplace(const char (&str)[N - beg + 1]) noexcept
+      requires(is_mutable)
+    {
+      std::ranges::copy_n(std::ranges::begin(str), N - beg, begin() + beg);
+      return *this;
+    }
+    constexpr static_string_view<N, is_mutable> &emplace(const char (&str)[N + 1]) noexcept
+      requires(is_mutable)
+    {
+      return emplace<0>(str);
+    }
+    template <size_t beg, std::ranges::input_range range_t>
+      requires(std::same_as<std::ranges::range_value_t<range_t>, char>)
+    constexpr static_string_view<N, is_mutable> &emplace(const range_t &s) noexcept
+      requires(is_mutable)
+    {
+      std::ranges::copy_n(std::ranges::cbegin(s), N - beg, begin() + beg);
+      return *this;
+    }
+    template <std::ranges::input_range range_t>
+      requires(std::same_as<std::ranges::range_value_t<range_t>, char>)
+    constexpr static_string_view<N, is_mutable> &emplace(const range_t &s) noexcept
+      requires(is_mutable)
+    {
+      return emplace<0>(s);
     }
   };
   export template <size_t N> class static_string {
@@ -102,6 +133,10 @@ namespace moderna::generic {
       std::ranges::copy_n(std::ranges::begin(s), N, __container.begin());
       __container[N] = '\0';
     }
+    constexpr static_string(char fill_char = ' ') {
+      std::ranges::fill_n(__container.begin(), N, fill_char);
+      __container[N] = '\0';
+    }
 
     // Getters
     constexpr std::optional<std::reference_wrapper<const char>> operator[](size_t id
@@ -118,6 +153,15 @@ namespace moderna::generic {
       } else {
         return std::nullopt;
       }
+    }
+    constexpr operator static_string_view<N, false>() const noexcept {
+      return borrow();
+    }
+    constexpr operator static_string_view<N, true>() noexcept {
+      return borrow_mut();
+    }
+    constexpr operator static_string_view<N, false>() noexcept {
+      return borrow();
     }
 
     // Iterators
@@ -157,18 +201,20 @@ namespace moderna::generic {
       return borrow().template substr<begin_pos, length>();
     }
     template <size_t new_size>
-    constexpr static_string<new_size> resize(
+    constexpr generic::static_string<new_size> resize(
       char fill_char = '\0', padding_type p = padding_type::back
     ) const
-      requires(new_size > N)
+      requires(new_size >= N)
     {
-      return static_string<new_size>{std::ranges::subrange{begin(), begin() + N}, fill_char, p};
+      return generic::static_string<new_size>{
+        std::ranges::subrange{begin(), begin() + N}, fill_char, p
+      };
     }
     template <size_t new_size>
-    constexpr static_string<new_size> resize() const
+    constexpr generic::static_string<new_size> resize() const
       requires(new_size < N)
     {
-      return static_string<new_size>{__container};
+      return generic::static_string<new_size>{__container};
     }
 
     // Mutability
@@ -178,17 +224,37 @@ namespace moderna::generic {
     constexpr static_string_view<N, false> borrow() const noexcept {
       return static_string_view<N, false>{__container.begin(), __container.begin() + N};
     }
+
+    template <size_t beg>
+    constexpr static_string<N> &emplace(const char (&str)[N - beg + 1]) noexcept {
+      borrow_mut().template emplace<beg>(str);
+      return *this;
+    }
+    constexpr static_string<N> &emplace(const char (&str)[N + 1]) noexcept {
+      return emplace<0>(str);
+    }
+    template <size_t beg, std::ranges::input_range range_t>
+      requires(std::same_as<std::ranges::range_value_t<range_t>, char>)
+    constexpr static_string<N> &emplace(const range_t &s) noexcept {
+      borrow_mut().template emplace<beg, range_t>(s);
+      return *this;
+    }
+    template <std::ranges::input_range range_t>
+      requires(std::same_as<std::ranges::range_value_t<range_t>, char>)
+    constexpr static_string<N> &emplace(const range_t &s) noexcept {
+      return emplace<0>(s);
+    }
   };
 
   export template <size_t N>
     requires(N != 0)
-  constexpr static_string<N - 1> make_static_string(const char (&s)[N]) {
-    return static_string<N - 1>{s};
+  constexpr generic::static_string<N - 1> make_static_string(const char (&s)[N]) {
+    return generic::static_string<N - 1>{s};
   }
   export template <size_t N, typename... Args>
-    requires(N != 0 && std::is_constructible_v<static_string<N>, Args...>)
-  constexpr static_string<N> make_static_string(Args &&...args) {
-    return static_string<N>{std::forward<Args>(args)...};
+    requires(N != 0 && std::is_constructible_v<generic::static_string<N>, Args...>)
+  constexpr generic::static_string<N> make_static_string(Args &&...args) {
+    return generic::static_string<N>{std::forward<Args>(args)...};
   }
 }
 
@@ -198,7 +264,7 @@ template <size_t N, class char_type> struct std::formatter<generic::static_strin
   constexpr auto parse(auto &ctx) {
     return ctx.begin();
   }
-  constexpr auto format(const generic::static_string<N> &v, auto &ctx) {
+  constexpr auto format(const generic::static_string<N> &v, auto &ctx) const {
     return std::format_to(ctx.out(), "{}", v.as_view());
   }
 };
@@ -208,7 +274,7 @@ struct std::formatter<generic::static_string_view<N, is_mutable>, char_type> {
   constexpr auto parse(auto &ctx) {
     return ctx.begin();
   }
-  constexpr auto format(const generic::static_string_view<N, is_mutable> &v, auto &ctx) {
+  constexpr auto format(const generic::static_string_view<N, is_mutable> &v, auto &ctx) const {
     return std::format_to(ctx.out(), "{}", v.as_view());
   }
 };

@@ -31,3 +31,9 @@ MODERNA_ADD_TEST(make_static_string_str_cut) {
   constexpr auto str = generic::make_static_string<5>(std::string{"HELLO WORLD"});
   static_assert(str.as_view() == "HELLO");
 }
+
+MODERNA_ADD_TEST(make_string_view) {
+  constexpr auto str = generic::make_static_string("HELLO WORLD");
+  constexpr auto str_view = str.borrow();
+  static_assert(str[0].value().get() == 'H');
+}
