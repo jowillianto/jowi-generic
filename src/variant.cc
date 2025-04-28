@@ -1,9 +1,8 @@
 module;
-#include <cmath>
 #include <concepts>
+#include <functional>
 #include <optional>
 #include <variant>
-#include <vector>
 export module moderna.generic:variant;
 
 namespace moderna::generic {

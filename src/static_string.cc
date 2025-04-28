@@ -6,6 +6,7 @@ module;
 #include <ranges>
 #include <string>
 #include <string_view>
+#include <cstddef>
 export module moderna.generic:static_string;
 
 namespace moderna::generic {
