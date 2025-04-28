@@ -11,12 +11,10 @@ export module moderna.generic:static_string;
 
 namespace moderna::generic {
   export enum struct padding_type { front, back };
-  export template <size_t N, bool is_mutable> class static_string_view {
+  export template <size_t N, bool is_mutable> struct static_string_view {
     using pointer_type = std::conditional_t<is_mutable, char *, const char *>;
     pointer_type __beg;
     pointer_type __end;
-
-  public:
     constexpr static_string_view(pointer_type beg, pointer_type end) : __beg{beg}, __end{end} {}
     constexpr static_string_view(const static_string_view<N, false> &s) :
       __beg{s.__beg}, __end{s.__end} {}
@@ -107,10 +105,8 @@ namespace moderna::generic {
       return emplace<0>(s);
     }
   };
-  export template <size_t N> class static_string {
+  export template <size_t N> struct static_string {
     std::array<char, N + 1> __container;
-
-  public:
     template <std::ranges::sized_range range_type>
       requires(std::assignable_from<char &, std::ranges::range_value_t<range_type>>)
     constexpr static_string(
