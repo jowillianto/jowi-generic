@@ -17,6 +17,7 @@ namespace moderna::generic {
 
   public:
     constexpr key_vector() : __values{} {}
+    constexpr key_vector(container_type container) : __values{container} {}
     constexpr key_vector(std::initializer_list<std::pair<key_type, value_type>> list) {
       __values.reserve(list.size());
       for (const auto &[key, value] : list) {

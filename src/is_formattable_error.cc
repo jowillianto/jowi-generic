@@ -1,0 +1,32 @@
+module;
+#include <concepts>
+#include <format>
+#include <string_view>
+export module moderna.generic:is_formattable_error;
+
+namespace moderna::generic {
+  export template <class E>
+  concept is_formattable_error =
+    std::is_constructible_v<std::string_view, decltype(std::declval<E>().what())> ||
+    std::formattable<E, char>;
+
+  export struct error_formatter {
+    std::string msg;
+    template <is_formattable_error E> error_formatter(const E &e) {
+      if constexpr (std::formattable<E, char>) {
+        msg = std::format("{}", e);
+      } else {
+        msg = std::format("{}", e.what());
+      }
+    }
+  };
+}
+namespace generic = moderna::generic;
+template <class char_type> struct std::formatter<generic::error_formatter, char_type> {
+  constexpr auto parse(auto &ctx) {
+    return ctx.begin();
+  }
+  constexpr auto format(const generic::error_formatter &e, auto &ctx) const {
+    return std::format_to(ctx.out(), "{}", e.msg);
+  }
+};

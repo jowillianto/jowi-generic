@@ -2,9 +2,11 @@ module;
 #include <exception>
 #include <optional>
 #include <string>
+#include <string_view>
+#include <format>
 export module moderna.generic:staged_error;
 import :static_string;
-import :is_whatable_error;
+import :is_formattable_error;
 
 namespace moderna::generic {
   template <generic::static_string stage, generic::static_string... stages>
@@ -40,8 +42,8 @@ namespace moderna::generic {
     using error_type = staged_error<stages...>;
     size_t stage;
 
-    error_type operator()(const generic::is_whatable_error auto &e) {
-      return error_type{e.what(), stage};
+    error_type operator()(const generic::is_formattable_error auto &e) {
+      return error_type{std::format("{}", error_formatter{e}), stage};
     }
   };
 }

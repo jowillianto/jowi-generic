@@ -5,5 +5,6 @@ export import :static_precise_floating_point;
 export import :is_number;
 export import :static_string;
 export import :staged_error;
-export import :is_whatable_error;
+export import :is_formattable_error;
 export import :key_vector;
+export import :thread_guard;
