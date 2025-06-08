@@ -2,6 +2,7 @@ module;
 #include <algorithm>
 #include <functional>
 #include <optional>
+#include <ranges>
 #include <vector>
 export module moderna.generic:key_vector;
 
@@ -86,6 +87,10 @@ namespace moderna::generic {
     }
     constexpr bool empty() const noexcept {
       return __values.empty();
+    }
+
+    constexpr auto keys() const noexcept {
+      return std::ranges::transform_view{__values, entry_type::first};
     }
   };
 }
