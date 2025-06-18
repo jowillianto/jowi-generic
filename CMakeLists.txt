@@ -17,10 +17,6 @@ if (NOT TARGET ${PROJECT_NAME})
     PUBLIC
       FILE_SET CXX_MODULES FILES ${${PROJECT_NAME}_src}
   )
-  target_include_directories(${PROJECT_NAME}
-    PUBLIC
-      "${CMAKE_CURRENT_LIST_DIR}/include"
-  )
 endif()
 
 if (MODERNA_GENERIC_BUILD_TESTS) 
