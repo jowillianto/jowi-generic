@@ -1,27 +1,55 @@
 cmake_minimum_required(VERSION 3.28)
-project(moderna_generic)
+project(moderna_generic VERSION 1.0.0)
 set (CMAKE_CXX_STANDARD 23)
 set (CMAKE_CXX_STANDARD_REQUIRED true)
 set (CMAKE_CXX_SCAN_FOR_MODULES true)
-set (CMAKE_CXX_COMPILE_FEATURES "-Wall -Werror")
-option (MODERNA_GENERIC_BUILD_TESTS "Build tests" OFF)
-include (CTest)
 
-if (NOT TARGET ${PROJECT_NAME})
-  add_library(${PROJECT_NAME})
-  file (
-    GLOB ${PROJECT_NAME}_src
-    "${CMAKE_CURRENT_LIST_DIR}/src/*.cc"
-  )
-  target_sources(${PROJECT_NAME}
-    PUBLIC
-      FILE_SET CXX_MODULES FILES ${${PROJECT_NAME}_src}
-  )
-endif()
+option (MODERNA_GENERIC_BUILD_TESTS "Build tests" OFF)
+
+add_library(${PROJECT_NAME})
+add_library(moderna::generic ALIAS ${PROJECT_NAME})
+file (
+  GLOB ${PROJECT_NAME}_src
+  "${CMAKE_CURRENT_LIST_DIR}/src/*.cc"
+)
+target_sources(${PROJECT_NAME}
+  PUBLIC
+    FILE_SET CXX_MODULES FILES ${${PROJECT_NAME}_src}
+)
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_23)
 
 if (MODERNA_GENERIC_BUILD_TESTS) 
   if (NOT TARGET moderna_test_lib)
     add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/libs/test-lib)
   endif()
   add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/tests)
+endif()
+
+if (MODERNA_INSTALL)
+  include(GNUInstallDirs)
+  set (MODERNA_COMPONENT_NAME "generic")
+  set_property(
+    TARGET ${PROJECT_NAME} 
+    PROPERTY EXPORT_NAME ${MODERNA_COMPONENT_NAME}
+  )
+  install (
+    TARGETS ${PROJECT_NAME}
+    EXPORT moderna
+    FILE_SET 
+      CXX_MODULES 
+      DESTINATION ${CMAKE_INSTALL_PREFIX}/cxx_modules/moderna/${MODERNA_COMPONENT_NAME}
+      COMPONENT ${MODERNA_COMPONENT_NAME}_file_set
+    CXX_MODULES_BMI 
+      COMPONENT ${MODERNA_COMPONENT_NAME}
+      DESTINATION ${CMAKE_INSTALL_PREFIX}/cxx_modules/moderna/${MODERNA_COMPONENT_NAME}
+  )
+  if (NOT MODERNA_GLOBAL_INSTALL)
+    install (
+      EXPORT moderna
+      DESTINATION ${CMAKE_INSTALL_LIBDIR}/moderna
+      FILE moderna-config.cmake
+      NAMESPACE moderna::
+      CXX_MODULES_DIRECTORY cxx_modules/moderna
+    )
+  endif()
 endif()
