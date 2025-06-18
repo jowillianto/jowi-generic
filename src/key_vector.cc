@@ -18,10 +18,10 @@ namespace moderna::generic {
 
   public:
     constexpr key_vector() : __values{} {}
-    constexpr key_vector(container_type container) : __values{container} {}
+    constexpr key_vector(container_type container) : __values{std::move(container)} {}
     constexpr key_vector(std::initializer_list<std::pair<key_type, value_type>> list) {
       __values.reserve(list.size());
-      for (const auto &[key, value] : list) {
+      for (auto &&[key, value] : list) {
         insert(std::move(key), std::move(value));
       }
     }
@@ -49,10 +49,9 @@ namespace moderna::generic {
     }
 
     constexpr value_type &insert(const key_type &key, value_type value) {
-      auto cur_entry = get(key);
-      if (cur_entry) {
-        cur_entry.value().get() = std::move(value);
-        return cur_entry.value().get();
+      auto it = std::ranges::find(__values, key, &entry_type::first);
+      if (it != __values.end()) {
+        return __values.emplace(it + 1, entry_type{key, std::move(value)})->second;
       } else {
         return __values.emplace_back(entry_type{key, std::move(value)}).second;
       }
@@ -63,7 +62,7 @@ namespace moderna::generic {
       if (it == __values.end()) {
         return std::nullopt;
       } else {
-        value_type &value = std::move(it->value);
+        value_type value = std::move(it->value);
         __values.erase(it);
         return std::optional{std::move(value)};
       }
