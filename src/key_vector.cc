@@ -26,39 +26,64 @@ namespace moderna::generic {
       }
     }
 
-    template <is_comparable<key_type> search_key_type>
-    constexpr std::optional<std::reference_wrapper<const value_type>> get(
-      search_key_type &&k
-    ) const noexcept {
-      auto it = std::ranges::find(__values, std::forward<search_key_type>(k), &entry_type::first);
+    /*
+      element getters.
+    */
+    template <is_comparable<key_type> Key>
+    constexpr std::optional<std::reference_wrapper<const value_type>> get(Key &&k) const noexcept {
+      auto it = std::ranges::find(__values, std::forward<Key>(k), &entry_type::first);
       if (it == __values.end()) {
         return std::nullopt;
       } else {
         return std::cref(it->second);
       }
     }
-
-    template <is_comparable<key_type> search_key_type>
-    constexpr std::optional<std::reference_wrapper<value_type>> get(search_key_type &&k) noexcept {
-      auto it = std::ranges::find(__values, std::forward<search_key_type>(k), &entry_type::first);
+    template <is_comparable<key_type> Key>
+    constexpr std::optional<std::reference_wrapper<value_type>> get(Key &&k) noexcept {
+      auto it = std::ranges::find(__values, std::forward<Key>(k), &entry_type::first);
       if (it == __values.end()) {
         return std::nullopt;
       } else {
         return std::ref(it->second);
       }
     }
+    template <is_comparable<key_type> Key>
+    constexpr std::optional<std::reference_wrapper<const value_type>> operator[](
+      Key &&key
+    ) const noexcept {
+      return get(std::forward<Key>(key));
+    }
+    template <is_comparable<key_type> Key>
+    constexpr std::optional<std::reference_wrapper<value_type>> operator[](Key &&key) noexcept {
+      return get(std::forward<Key>(key));
+    }
 
-    constexpr value_type &insert(const key_type &key, value_type value) {
+    /*
+      element inserts
+    */
+    template <is_comparable<key_type> Key, class... Args>
+      requires(
+        std::is_constructible_v<key_type, Key> && std::is_constructible_v<value_type, Args...>
+      )
+    constexpr value_type &emplace(Key &&key, Args &&...args) {
       auto it = std::ranges::find(__values, key, &entry_type::first);
       if (it != __values.end()) {
-        return __values.emplace(it + 1, entry_type{key, std::move(value)})->second;
+        return __values
+          .emplace(
+            it + 1, key_type{std::forward<Key>(key)}, value_type{std::forward<Args>(args)...}
+          )
+          ->second;
       } else {
-        return __values.emplace_back(entry_type{key, std::move(value)}).second;
+        return __values
+          .emplace_back(key_type{std::forward<Key>(key)}, value_type{std::forward<Args>(args)...})
+          .second;
       }
     }
-    template <is_comparable<key_type> search_key_type>
-    constexpr std::optional<value_type> remove(search_key_type &&key) {
-      auto it = std::ranges::find(__values, std::forward<search_key_type>(key), &entry_type::first);
+    constexpr value_type &insert(const key_type &key, value_type value) {
+      return emplace(key, std::move(value));
+    }
+    template <is_comparable<key_type> Key> constexpr std::optional<value_type> remove(Key &&key) {
+      auto it = std::ranges::find(__values, std::forward<Key>(key), &entry_type::first);
       if (it == __values.end()) {
         return std::nullopt;
       } else {

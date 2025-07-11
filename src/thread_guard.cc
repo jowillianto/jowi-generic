@@ -52,5 +52,12 @@ namespace moderna::generic {
       std::unique_lock l{__mut};
       return std::invoke(std::forward<F>(f), static_cast<T &>(__value));
     }
+
+    T &unsafe_value() {
+      return __value;
+    }
+    const T &unsafe_value() const {
+      return __value;
+    }
   };
 }
