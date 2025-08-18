@@ -1,5 +1,6 @@
 module;
 #include <format>
+#include <memory>
 #include <string>
 export module moderna.generic:is_formattable_error;
 
@@ -17,6 +18,19 @@ namespace moderna::generic {
       } else {
         msg = std::string{e.what()};
       }
+    }
+  };
+
+  export class generic_error : public std::exception {
+    std::unique_ptr<std::exception> __err;
+
+  public:
+    generic_error(std::unique_ptr<std::exception> e) : __err{std::move(e)} {}
+    template <std::derived_from<std::exception> T>
+    generic_error(T err) : __err{std::make_unique<T>(std::move(err))} {}
+
+    const char *what() const noexcept {
+      return __err->what();
     }
   };
 }
