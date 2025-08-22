@@ -68,11 +68,8 @@ namespace moderna::generic {
     constexpr value_type &emplace(Key &&key, Args &&...args) {
       auto it = std::ranges::find(__values, key, &entry_type::first);
       if (it != __values.end()) {
-        return __values
-          .emplace(
-            it + 1, key_type{std::forward<Key>(key)}, value_type{std::forward<Args>(args)...}
-          )
-          ->second;
+        it->second = value_type{std::forward<Args>(args)...};
+        return it->second;
       } else {
         return __values
           .emplace_back(key_type{std::forward<Key>(key)}, value_type{std::forward<Args>(args)...})
