@@ -1,12 +1,16 @@
+#ifdef MODERNA_GENERIC_MODULES
 module;
+#endif
 #include <exception>
+#include <format>
 #include <optional>
 #include <string>
 #include <string_view>
-#include <format>
+#if defined(MODERNA_GENERIC_MODULES)
 export module moderna.generic:staged_error;
 import :static_string;
 import :is_formattable_error;
+#endif
 
 namespace moderna::generic {
   template <generic::static_string stage, generic::static_string... stages>
@@ -19,7 +23,7 @@ namespace moderna::generic {
       return get_stage_name<stages...>(id);
     }
   }
-  export template <generic::static_string... stages> class staged_error : public std::exception {
+  EXPORT template <generic::static_string... stages> class staged_error : public std::exception {
     std::string __msg;
     size_t __stage;
 
@@ -38,7 +42,7 @@ namespace moderna::generic {
       return std::string_view{__msg.c_str()};
     }
   };
-  export template <generic::static_string... stages> struct staged_error_creator {
+  EXPORT template <generic::static_string... stages> struct staged_error_creator {
     using error_type = staged_error<stages...>;
     size_t stage;
 

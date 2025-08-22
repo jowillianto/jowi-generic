@@ -1,9 +1,13 @@
+#ifdef MODERNA_GENERIC_MODULES
 module;
+#endif
 #include <concepts>
 #include <functional>
 #include <optional>
 #include <variant>
+#ifdef MODERNA_GENERIC_MODULES
 export module moderna.generic:variant;
+#endif
 
 namespace moderna::generic {
   template <class test_value, class... test_targets>
@@ -14,7 +18,7 @@ namespace moderna::generic {
     becomes more convenient for any API user. No additional features has been added except the fact
     that the variant is now exception safe.
   */
-  export template <typename... variants> struct variant {
+  EXPORT template <typename... variants> struct variant {
     using variant_type = std::variant<variants...>;
     variant_type value;
 

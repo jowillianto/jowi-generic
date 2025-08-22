@@ -1,12 +1,16 @@
+#ifdef MODERNA_GENERIC_MODULES
 module;
+#endif
 #include <atomic>
 #include <concepts>
 #include <mutex>
 #include <thread>
+#ifdef MODERNA_GENERIC_MODULES
 export module moderna.generic:thread_guard;
+#endif
 
 namespace moderna::generic {
-  export class bool_mutex {
+  EXPORT class bool_mutex {
     std::atomic_flag __flag;
 
   public:
@@ -32,7 +36,7 @@ namespace moderna::generic {
       return !is_previously_locked;
     }
   };
-  export template <class T, class mutex_type = bool_mutex> class thread_guard {
+  EXPORT template <class T, class mutex_type = bool_mutex> class thread_guard {
     T __value;
     mutable mutex_type __mut;
 

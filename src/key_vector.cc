@@ -1,17 +1,21 @@
+#ifdef MODERNA_GENERIC_MODULES
 module;
+#endif
 #include <algorithm>
 #include <functional>
 #include <optional>
 #include <ranges>
 #include <vector>
+#if defined(MODERNA_GENERIC_MODULES)
 export module moderna.generic:key_vector;
+#endif
 
 namespace moderna::generic {
-  export template <class value_type, class other_type>
+  EXPORT template <class value_type, class other_type>
   concept is_comparable = requires(std::decay_t<value_type> l, std::decay_t<other_type> r) {
     { l == r } -> std::same_as<bool>;
   };
-  export template <class key_type, class value_type> class key_vector {
+  EXPORT template <class key_type, class value_type> class key_vector {
     using entry_type = std::pair<key_type, value_type>;
     using container_type = std::vector<entry_type>;
     container_type __values;
@@ -68,11 +72,8 @@ namespace moderna::generic {
     constexpr value_type &emplace(Key &&key, Args &&...args) {
       auto it = std::ranges::find(__values, key, &entry_type::first);
       if (it != __values.end()) {
-        return __values
-          .emplace(
-            it + 1, key_type{std::forward<Key>(key)}, value_type{std::forward<Args>(args)...}
-          )
-          ->second;
+        it->second = value_type{std::forward<Args>(args)...};
+        return it->second;
       } else {
         return __values
           .emplace_back(key_type{std::forward<Key>(key)}, value_type{std::forward<Args>(args)...})

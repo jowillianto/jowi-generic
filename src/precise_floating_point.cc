@@ -1,15 +1,19 @@
+#ifdef MODERNA_GENERIC_MODULES
 module;
+#endif
 #include <cmath>
 #include <concepts>
 #include <format>
+#ifdef MODERNA_GENERIC_MODULES
 export module moderna.generic:precise_floating_point;
 import :is_number;
+#endif
 
 namespace moderna::generic {
   /*
     Precise Number limits the amount of decimals
   */
-  export template <std::floating_point num_type> class precise_floating_point {
+  EXPORT template <std::floating_point num_type> class precise_floating_point {
     int __precision;
     num_type __multiplier;
     num_type __value;
@@ -77,8 +81,8 @@ namespace moderna::generic {
       return *this;
     }
   };
-  export using precise_float = precise_floating_point<float>;
-  export using precise_double = precise_floating_point<double>;
+  EXPORT using precise_float = precise_floating_point<float>;
+  EXPORT using precise_double = precise_floating_point<double>;
 }
 
 namespace generic = moderna::generic;

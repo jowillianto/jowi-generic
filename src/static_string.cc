@@ -1,17 +1,21 @@
+#ifdef MODERNA_GENERIC_MODULES
 module;
+#endif
 #include <algorithm>
 #include <array>
+#include <cstddef>
 #include <format>
 #include <optional>
 #include <ranges>
 #include <string>
 #include <string_view>
-#include <cstddef>
+#if defined(MODERNA_GENERIC_MODULES)
 export module moderna.generic:static_string;
+#endif
 
 namespace moderna::generic {
-  export enum struct padding_type { front, back };
-  export template <size_t N, bool is_mutable> struct static_string_view {
+  EXPORT enum struct padding_type { front, back };
+  EXPORT template <size_t N, bool is_mutable> struct static_string_view {
     using pointer_type = std::conditional_t<is_mutable, char *, const char *>;
     pointer_type __beg;
     pointer_type __end;
@@ -20,7 +24,8 @@ namespace moderna::generic {
       __beg{s.__beg}, __end{s.__end} {}
 
     // Getters
-    constexpr std::optional<std::reference_wrapper<const char>> operator[](size_t id
+    constexpr std::optional<std::reference_wrapper<const char>> operator[](
+      size_t id
     ) const noexcept {
       if (id < N) {
         return std::cref(*(__beg + id));
@@ -105,7 +110,7 @@ namespace moderna::generic {
       return emplace<0>(s);
     }
   };
-  export template <size_t N> struct static_string {
+  EXPORT template <size_t N> struct static_string {
     std::array<char, N + 1> __container;
     template <std::ranges::sized_range range_type>
       requires(std::assignable_from<char &, std::ranges::range_value_t<range_type>>)
@@ -136,7 +141,8 @@ namespace moderna::generic {
     }
 
     // Getters
-    constexpr std::optional<std::reference_wrapper<const char>> operator[](size_t id
+    constexpr std::optional<std::reference_wrapper<const char>> operator[](
+      size_t id
     ) const noexcept {
       if (id < N) {
         return std::cref(__container[id]);
@@ -243,12 +249,12 @@ namespace moderna::generic {
     }
   };
 
-  export template <size_t N>
+  EXPORT template <size_t N>
     requires(N != 0)
   constexpr generic::static_string<N - 1> make_static_string(const char (&s)[N]) {
     return generic::static_string<N - 1>{s};
   }
-  export template <size_t N, typename... Args>
+  EXPORT template <size_t N, typename... Args>
     requires(N != 0 && std::is_constructible_v<generic::static_string<N>, Args...>)
   constexpr generic::static_string<N> make_static_string(Args &&...args) {
     return generic::static_string<N>{std::forward<Args>(args)...};

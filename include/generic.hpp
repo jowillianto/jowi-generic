@@ -1,0 +1,11 @@
+#include <moderna/generic/thread_guard>
+#include <moderna/generic/id_vector>
+#include <moderna/generic/invoker>
+#include <moderna/generic/is_formattable_error>
+#include <moderna/generic/is_number>
+#include <moderna/generic/key_vector>
+#include <moderna/generic/precise_floating_point>
+#include <moderna/generic/static_string>
+#include <moderna/generic/staged_error>
+#include <moderna/generic/static_precise_floating_point>
+#include <moderna/generic/variant>

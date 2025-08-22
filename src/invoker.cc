@@ -1,10 +1,13 @@
+#ifdef MODERNA_GENERIC_MODULES
 module;
+#endif
 #include <concepts>
 #include <tuple>
+#if defined(MODERNA_GENERIC_MODULES)
 export module moderna.generic:invoker;
-
+#endif
 namespace moderna::generic {
-  export template <class... Args> struct invoker {
+  EXPORT template <class... Args> struct invoker {
     std::tuple<Args...> args;
     invoker(Args... args) : args{std::forward<Args>(args)...} {}
 

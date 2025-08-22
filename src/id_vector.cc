@@ -1,13 +1,16 @@
+#ifdef MODERNA_GENERIC_MODULES
 module;
+#endif
+#include <algorithm>
 #include <atomic>
 #include <functional>
-#include <algorithm>
-#include <ranges>
 #include <optional>
 #include <type_traits>
 #include <vector>
+#if defined(MODERNA_GENERIC_MODULES)
 export module moderna.generic:id_vector;
 import :thread_guard;
+#endif
 
 namespace moderna::generic {
   template <class T> struct id_vector_entry {
@@ -29,7 +32,8 @@ namespace moderna::generic {
       requires(std::is_constructible_v<T, Args> && ...)
     id_vector(Args &&...args) : __ctr{sizeof...(Args)} {
       size_t id = 0;
-      (__container.unsafe_value().emplace_back(id++, std::make_shared<T>(std::forward<Args>(args))), ...);
+      (__container.unsafe_value().emplace_back(id++, std::make_shared<T>(std::forward<Args>(args))),
+       ...);
     }
 
     template <class... Args>
@@ -72,13 +76,12 @@ namespace moderna::generic {
     }
 
     std::optional<value_type> erase(size_t id) {
-      using return_type = std::optional<value_type>; 
-      return __container.read([&](container_type& container){
+      using return_type = std::optional<value_type>;
+      return __container.read([&](container_type &container) {
         auto it = std::ranges::find(container, id, &value_type::id);
         if (it == container.end()) {
           return return_type{std::nullopt};
-        }
-        else {
+        } else {
           auto e = std::move(*it);
           container.erase(it);
           return return_type{std::move(e)};

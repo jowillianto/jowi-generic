@@ -1,14 +1,18 @@
+#ifdef MODERNA_GENERIC_MODULES
 module;
+#endif
 #include <format>
 #include <memory>
 #include <string>
+#if defined(MODERNA_GENERIC_MODULES)
 export module moderna.generic:is_formattable_error;
+#endif
 
 namespace moderna::generic {
-  export template <class E>
+  EXPORT template <class E>
   concept is_formattable_error = std::derived_from<E, std::exception> || std::formattable<E, char>;
 
-  export struct error_formatter {
+  EXPORT struct error_formatter {
     std::string msg;
     template <is_formattable_error E> constexpr error_formatter(const E &e) {
       if constexpr (std::formattable<E, char>) {

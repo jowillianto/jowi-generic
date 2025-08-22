@@ -1,9 +1,13 @@
+#ifdef MODERNA_GENERIC_MODULES
 module;
+#endif
 #include <concepts>
 #include <format>
+#if defined(MODERNA_GENERIC_MODULES)
 export module moderna.generic:static_precise_floating_point;
 import :precise_floating_point;
 import :is_number;
+#endif
 
 namespace moderna::generic {
   template <std::floating_point num_type, int acc = -1> class static_precise_floating_point {
@@ -65,9 +69,9 @@ namespace moderna::generic {
   };
 
   // Shortcut definitions
-  export template <int acc = -1>
+  EXPORT template <int acc = -1>
   using static_precise_float = static_precise_floating_point<float, acc>;
-  export template <int acc = -1>
+  EXPORT template <int acc = -1>
   using static_precise_double = static_precise_floating_point<double, acc>;
 }
 
@@ -78,8 +82,9 @@ struct std::formatter<generic::static_precise_floating_point<num_type, acc>, cha
   constexpr auto parse(auto &ctx) {
     return ctx.begin();
   }
-  constexpr auto format(const generic::static_precise_floating_point<num_type, acc> &v, auto &ctx)
-    const {
+  constexpr auto format(
+    const generic::static_precise_floating_point<num_type, acc> &v, auto &ctx
+  ) const {
     return std::format_to(ctx.out(), "{}", v.to_dynamic());
   }
 };
