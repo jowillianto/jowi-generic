@@ -71,17 +71,17 @@ namespace moderna::generic {
     }
     template <class F>
       requires(std::invocable<F, variants &> && ...)
-    constexpr auto visit(F &&f) {
+    constexpr auto visit(F &&f) & {
       return std::visit(std::forward<F>(f), value);
     }
     template <class F>
       requires(std::invocable<F, const variants &> && ...)
-    constexpr auto visit(F &&f) const {
+    constexpr auto visit(F &&f) const & {
       return std::visit(std::forward<F>(f), value);
     }
     template <class F>
       requires(std::invocable<F, variants &&> && ...)
-    constexpr auto visit(F &&f) {
+    constexpr auto visit(F &&f) && {
       return std::visit(std::forward<F>(f), std::move(value));
     }
   };
