@@ -9,3 +9,4 @@ export import :is_formattable_error;
 export import :key_vector;
 export import :thread_guard;
 export import :invoker;
+export import :fixed_string;
