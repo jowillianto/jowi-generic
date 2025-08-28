@@ -22,23 +22,20 @@ namespace moderna::generic {
     }
 
   public:
-    template <typename T>
-      requires(std::assignable_from<num_type &, T>)
+    template <typename T> requires(std::assignable_from<num_type &, T>)
     constexpr precise_floating_point(T &&v, int precision) {
       __value = std::forward<T>(v);
       set_precision(precision);
     }
 
     // Operator overloads
-    template <typename T>
-      requires(std::assignable_from<num_type &, T>)
+    template <typename T> requires(std::assignable_from<num_type &, T>)
     constexpr precise_floating_point &operator=(T &&v) {
       __value = std::forward<T>(v);
       __round();
       return *this;
     }
-    template <typename T>
-      requires(std::assignable_from<T &, num_type>)
+    template <typename T> requires(std::assignable_from<T &, num_type>)
     constexpr operator T() const {
       return __value;
     }
@@ -48,8 +45,7 @@ namespace moderna::generic {
     ) {
       return l.value() == r.value();
     }
-    template <is_number r_num_type>
-      requires(std::equality_comparable_with<num_type, r_num_type>)
+    template <is_number r_num_type> requires(std::equality_comparable_with<num_type, r_num_type>)
     friend bool operator==(const precise_floating_point &l, const r_num_type &r) {
       return l.value() == r;
     }
@@ -69,8 +65,7 @@ namespace moderna::generic {
       __round();
       return *this;
     }
-    template <typename T>
-      requires(std::assignable_from<num_type &, T>)
+    template <typename T> requires(std::assignable_from<num_type &, T>)
     constexpr precise_floating_point &set_value(T &&v) {
       __value = std::forward<T>(v);
       __round();
@@ -89,10 +84,11 @@ struct std::formatter<generic::precise_floating_point<num_type>, char_type> {
     return ctx.begin();
   }
   constexpr auto format(const generic::precise_floating_point<num_type> &v, auto &ctx) const {
+    auto num = v.value();
     if (v.precision() < 0) {
-      return std::format_to(ctx.out(), "{}", v.value());
+      return std::format_to(ctx.out(), "{}", num);
     }
     auto fmt = std::format("{{:{}}}", v.precision());
-    return std::vformat_to(ctx.out(), fmt, std::make_format_args(v.value()));
+    return std::vformat_to(ctx.out(), fmt, std::make_format_args(num));
   }
 };

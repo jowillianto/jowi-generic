@@ -33,7 +33,7 @@ MODERNA_ADD_TEST(make_static_string_str_cut) {
 }
 
 MODERNA_ADD_TEST(make_string_view) {
-  constexpr auto str = generic::make_static_string("HELLO WORLD");
+  static constexpr auto str = generic::make_static_string("HELLO WORLD");
   constexpr auto str_view = str.borrow();
   static_assert(str[0].value().get() == 'H');
 }

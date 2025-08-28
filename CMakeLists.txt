@@ -5,6 +5,7 @@ set (CMAKE_CXX_STANDARD_REQUIRED true)
 set (CMAKE_CXX_SCAN_FOR_MODULES true)
 
 option (MODERNA_GENERIC_BUILD_TESTS "Build tests" OFF)
+option (MODERNA_GENERIC_CONSTEXPR_TESTS "Run constexpr tests" OFF)
 
 add_library(${PROJECT_NAME})
 add_library(moderna::generic ALIAS ${PROJECT_NAME})
@@ -17,6 +18,13 @@ target_sources(${PROJECT_NAME}
     FILE_SET CXX_MODULES FILES ${${PROJECT_NAME}_src}
 )
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_23)
+
+if (MODERNA_GENERIC_CONSTEXPR_TESTS)
+  target_compile_definitions(${PROJECT_NAME} 
+    PRIVATE 
+      MODERNA_GENERIC_CONSTEXPR_TESTS
+  )
+endif()
 
 if (MODERNA_GENERIC_BUILD_TESTS) 
   if (NOT TARGET moderna_test_lib)
