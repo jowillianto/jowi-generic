@@ -62,9 +62,7 @@ namespace moderna::generic {
       element inserts
     */
     template <is_comparable<key_type> Key, class... Args>
-      requires(
-        std::is_constructible_v<key_type, Key> && std::is_constructible_v<value_type, Args...>
-      )
+    requires(std::is_constructible_v<key_type, Key> && std::is_constructible_v<value_type, Args...>)
     constexpr value_type &emplace(Key &&key, Args &&...args) {
       auto it = std::ranges::find(__values, key, &entry_type::first);
       if (it != __values.end()) {
@@ -84,7 +82,7 @@ namespace moderna::generic {
       if (it == __values.end()) {
         return std::nullopt;
       } else {
-        value_type value = std::move(it->value);
+        value_type value = std::move(it->second);
         __values.erase(it);
         return std::optional{std::move(value)};
       }
@@ -111,7 +109,7 @@ namespace moderna::generic {
     }
 
     constexpr auto keys() const noexcept {
-      return std::ranges::transform_view{__values, entry_type::first};
+      return std::ranges::transform_view{__values, &entry_type::first};
     }
   };
 }
