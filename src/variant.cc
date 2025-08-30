@@ -9,6 +9,10 @@ namespace moderna::generic {
   template <class test___value, class... test_targets>
   concept is_in_target = (std::same_as<test___value, test_targets> || ...);
 
+  template <class... overloads> struct variant_visitor_overload : overloads... {
+    using overloads::operator()...;
+  };
+
   /*
     Variant but with more member functions. This is so that the usage of the variant itself
     becomes more convenient for any API user. No additional features has been added except the fact
@@ -83,17 +87,20 @@ namespace moderna::generic {
     /**
       visitor functions
     */
-    template <class F> requires(std::invocable<F, variants &> && ...)
-    constexpr auto visit(F &&f) & {
-      return std::visit(std::forward<F>(f), __value);
+    template <class... F>
+    requires(std::invocable<variant_visitor_overload<F...>, variants &> && ...)
+    constexpr auto visit(F &&...f) & {
+      return std::visit(variant_visitor_overload<F...>{std::forward<F>(f)...}, __value);
     }
-    template <class F> requires(std::invocable<F, const variants &> && ...)
-    constexpr auto visit(F &&f) const & {
-      return std::visit(std::forward<F>(f), __value);
+    template <class... F>
+    requires(std::invocable<variant_visitor_overload<F...>, const variants &> && ...)
+    constexpr auto visit(F &&...f) const & {
+      return std::visit(variant_visitor_overload<F...>{std::forward<F>(f)...}, __value);
     }
-    template <class F> requires(std::invocable<F, variants &&> && ...)
-    constexpr auto visit(F &&f) && {
-      return std::visit(std::forward<F>(f), std::move(__value));
+    template <class... F>
+    requires(std::invocable<variant_visitor_overload<F...>, variants &&> && ...)
+    constexpr auto visit(F &&...f) && {
+      return std::visit(variant_visitor_overload<F...>{std::forward<F>(f)...}, std::move(__value));
     }
   };
 }
