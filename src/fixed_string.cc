@@ -108,6 +108,13 @@ namespace moderna::generic {
       }
       return true;
     }
+    template <size_t N_R>
+    friend constexpr bool operator==(const fixed_string<N> &l, const char (&r)[N_R]) {
+      return l == std::string_view{r, r + N_R};
+    }
+    friend constexpr bool operator==(const fixed_string<N> &l, const char *r) {
+      return l == std::string_view{r};
+    }
   };
 }
 

@@ -27,6 +27,7 @@ if (MODERNA_GENERIC_CONSTEXPR_TESTS)
 endif()
 
 if (MODERNA_GENERIC_BUILD_TESTS) 
+  include (CTest)
   if (NOT TARGET moderna_test_lib)
     add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/libs/test-lib)
   endif()
