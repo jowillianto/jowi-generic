@@ -2,14 +2,14 @@ module;
 #include <cmath>
 #include <concepts>
 #include <format>
-export module moderna.generic:precise_floating_point;
+export module moderna.generic:prec_fp;
 import :is_number;
 
 namespace moderna::generic {
   /*
     Precise Number limits the amount of decimals
   */
-  export template <std::floating_point num_type> class precise_floating_point {
+  export template <std::floating_point num_type> class prec_fp {
     int __precision;
     num_type __multiplier;
     num_type __value;
@@ -23,14 +23,14 @@ namespace moderna::generic {
 
   public:
     template <typename T> requires(std::assignable_from<num_type &, T>)
-    constexpr precise_floating_point(T &&v, int precision) {
+    constexpr prec_fp(T &&v, int precision) {
       __value = std::forward<T>(v);
       set_precision(precision);
     }
 
     // Operator overloads
     template <typename T> requires(std::assignable_from<num_type &, T>)
-    constexpr precise_floating_point &operator=(T &&v) {
+    constexpr prec_fp &operator=(T &&v) {
       __value = std::forward<T>(v);
       __round();
       return *this;
@@ -40,13 +40,11 @@ namespace moderna::generic {
       return __value;
     }
     template <std::equality_comparable_with<num_type> r_num_type>
-    friend bool operator==(
-      const precise_floating_point &l, const precise_floating_point<r_num_type> &r
-    ) {
+    friend bool operator==(const prec_fp &l, const prec_fp<r_num_type> &r) {
       return l.value() == r.value();
     }
     template <is_number r_num_type> requires(std::equality_comparable_with<num_type, r_num_type>)
-    friend bool operator==(const precise_floating_point &l, const r_num_type &r) {
+    friend bool operator==(const prec_fp &l, const r_num_type &r) {
       return l.value() == r;
     }
 
@@ -59,31 +57,31 @@ namespace moderna::generic {
     }
 
     // Setter Function
-    constexpr precise_floating_point &set_precision(int new_precision) noexcept {
+    constexpr prec_fp &set_precision(int new_precision) noexcept {
       __precision = new_precision;
       __multiplier = std::pow(10, __precision);
       __round();
       return *this;
     }
     template <typename T> requires(std::assignable_from<num_type &, T>)
-    constexpr precise_floating_point &set_value(T &&v) {
+    constexpr prec_fp &set_value(T &&v) {
       __value = std::forward<T>(v);
       __round();
       return *this;
     }
   };
-  export using precise_float = precise_floating_point<float>;
-  export using precise_double = precise_floating_point<double>;
+  export using precise_float = prec_fp<float>;
+  export using precise_double = prec_fp<double>;
 }
 
 namespace generic = moderna::generic;
 
 template <std::floating_point num_type, class char_type>
-struct std::formatter<generic::precise_floating_point<num_type>, char_type> {
+struct std::formatter<generic::prec_fp<num_type>, char_type> {
   constexpr auto parse(auto &ctx) {
     return ctx.begin();
   }
-  constexpr auto format(const generic::precise_floating_point<num_type> &v, auto &ctx) const {
+  constexpr auto format(const generic::prec_fp<num_type> &v, auto &ctx) const {
     auto num = v.value();
     if (v.precision() < 0) {
       return std::format_to(ctx.out(), "{}", num);

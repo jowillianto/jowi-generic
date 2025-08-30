@@ -1,7 +1,7 @@
 export module moderna.generic;
 export import :variant;
-export import :precise_floating_point;
-export import :static_precise_floating_point;
+export import :prec_fp;
+export import :static_prec_fp;
 export import :is_number;
 export import :static_string;
 export import :staged_error;
