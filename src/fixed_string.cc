@@ -9,7 +9,8 @@ export module moderna.generic:fixed_string;
 namespace moderna::generic {
   /*
     fixed_string
-    a static buffer that guarantees that the last character is a null character.
+    a static buffer that guarantees that the last character is a null character. Most of the time
+    this can be used to written exceptions so that everything is noexcept.
   */
   export template <size_t N> requires(N > 1)
   struct fixed_string {
