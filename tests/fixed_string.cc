@@ -180,3 +180,14 @@ MODERNA_ADD_TEST(equality_operator_after_modifications) {
   test_lib::assert_equal(fs == "test!", true);
   test_lib::assert_equal(fs == "test", false);
 }
+
+MODERNA_ADD_TEST(construction_with_overflowing_string) {
+  generic::fixed_string<5> fs{std::string{"HELLO WORLD"}};
+  test_lib::assert_equal(fs, "HELLO");
+}
+
+MODERNA_ADD_TEST(construction_with_undeflow_string) {
+  generic::fixed_string<10> fs{std::string{"HELLO"}};
+  test_lib::assert_equal(fs, "HELLO");
+  test_lib::assert_equal(fs.length(), 5);
+}

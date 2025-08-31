@@ -2,7 +2,6 @@ module;
 #include <algorithm>
 #include <array>
 #include <format>
-#include <ranges>
 #include <string_view>
 export module moderna.generic:fixed_string;
 
@@ -34,7 +33,7 @@ namespace moderna::generic {
     }
     constexpr fixed_string(std::string_view c) noexcept : fixed_string() {
       __len = std::min(c.length(), N);
-      std::ranges::copy_n(c, __len, __buf.begin());
+      std::ranges::copy_n(c.begin(), __len, __buf.begin());
     }
     constexpr operator std::string_view() const noexcept {
       return std::string_view{begin(), end()};
@@ -128,7 +127,7 @@ template <size_t N, class char_type> struct std::formatter<generic::fixed_string
     return ctx.begin();
   }
   constexpr auto format(const generic::fixed_string<N> &s, auto &ctx) const {
-    std::format_to(ctx.out(), "{}", s.as_view());
+    std::format_to(ctx.out(), "{}", std::string_view{s});
     return ctx.out();
   }
 };
