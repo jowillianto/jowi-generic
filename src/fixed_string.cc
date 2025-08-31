@@ -32,6 +32,9 @@ namespace moderna::generic {
       std::ranges::copy_n(s, N - 1, __buf.begin());
       __len = N - 1;
     }
+    constexpr fixed_string(std::string_view c) noexcept : fixed_string() {
+      std::ranges::copy_n(c, std::min(c.length(), N), __buf.begin());
+    }
     constexpr operator std::string_view() const noexcept {
       return std::string_view{begin(), end()};
     }
