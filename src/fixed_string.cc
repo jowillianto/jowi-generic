@@ -52,6 +52,12 @@ namespace moderna::generic {
     constexpr const char *end() const noexcept {
       return __buf.begin() + __len;
     }
+    constexpr const char *cbegin() const noexcept {
+      return begin();
+    }
+    constexpr const char *cend() const noexcept {
+      return end();
+    }
     constexpr char *begin() noexcept {
       return __buf.begin();
     }
@@ -97,6 +103,12 @@ namespace moderna::generic {
         return std::nullopt;
       }
       return std::optional{std::ref(__buf[id])};
+    }
+
+    constexpr void unsafe_set_length(size_t l) noexcept {
+      if (__len <= N) {
+        __len = l;
+      }
     }
 
     // Comparison Operator
