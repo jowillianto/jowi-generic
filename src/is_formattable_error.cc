@@ -1,12 +1,13 @@
 module;
 #include <format>
-#include <memory>
 #include <string>
 export module jowi.generic:is_formattable_error;
 
 namespace jowi::generic {
+  // use DI instead
   export template <class E>
-  concept is_formattable_error = std::derived_from<E, std::exception> || std::formattable<E, char>;
+  concept is_formattable_error = std::formattable<E, char> ||
+    requires(const E &e) { std::formattable<decltype(e.what()), char>; };
 
   export struct error_formatter {
     std::string msg;
@@ -14,7 +15,7 @@ namespace jowi::generic {
       if constexpr (std::formattable<E, char>) {
         msg = std::format("{}", e);
       } else {
-        msg = std::string{e.what()};
+        msg = std::format("{}", e.what());
       }
     }
   };
