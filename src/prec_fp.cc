@@ -2,10 +2,10 @@ module;
 #include <cmath>
 #include <concepts>
 #include <format>
-export module moderna.generic:prec_fp;
+export module jowi.generic:prec_fp;
 import :is_number;
 
-namespace moderna::generic {
+namespace jowi::generic {
   /*
     Precise Number limits the amount of decimals
   */
@@ -74,7 +74,7 @@ namespace moderna::generic {
   export using precise_double = prec_fp<double>;
 }
 
-namespace generic = moderna::generic;
+namespace generic = jowi::generic;
 
 template <std::floating_point num_type, class char_type>
 struct std::formatter<generic::prec_fp<num_type>, char_type> {

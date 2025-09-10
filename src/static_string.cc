@@ -7,9 +7,9 @@ module;
 #include <ranges>
 #include <string>
 #include <string_view>
-export module moderna.generic:static_string;
+export module jowi.generic:static_string;
 
-namespace moderna::generic {
+namespace jowi::generic {
   export enum struct padding_type { front, back };
   export template <size_t N, bool is_mutable> struct static_string_view {
     using pointer_type = std::conditional_t<is_mutable, char *, const char *>;
@@ -242,7 +242,7 @@ namespace moderna::generic {
   }
 }
 
-namespace generic = moderna::generic;
+namespace generic = jowi::generic;
 
 template <size_t N, class char_type> struct std::formatter<generic::static_string<N>, char_type> {
   constexpr auto parse(auto &ctx) {

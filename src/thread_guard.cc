@@ -3,9 +3,9 @@ module;
 #include <concepts>
 #include <mutex>
 #include <thread>
-export module moderna.generic:thread_guard;
+export module jowi.generic:thread_guard;
 
-namespace moderna::generic {
+namespace jowi::generic {
   export class bool_mutex {
     std::atomic_flag __flag;
 

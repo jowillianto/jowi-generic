@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 3.28)
-project(moderna_generic VERSION 1.0.0)
+project(jowi_generic VERSION 1.0.0)
 set (CMAKE_CXX_STANDARD 23)
 set (CMAKE_CXX_STANDARD_REQUIRED true)
 set (CMAKE_CXX_SCAN_FOR_MODULES true)
 
-option (MODERNA_GENERIC_BUILD_TESTS "Build tests" OFF)
-option (MODERNA_GENERIC_CONSTEXPR_TESTS "Run constexpr tests" OFF)
+option (JOWI_GENERIC_BUILD_TESTS "Build tests" OFF)
+option (JOWI_GENERIC_CONSTEXPR_TESTS "Run constexpr tests" OFF)
 
 add_library(${PROJECT_NAME})
-add_library(moderna::generic ALIAS ${PROJECT_NAME})
+add_library(jowi::generic ALIAS ${PROJECT_NAME})
 file (
   GLOB ${PROJECT_NAME}_src
   "${CMAKE_CURRENT_LIST_DIR}/src/*.cc"
@@ -19,14 +19,14 @@ target_sources(${PROJECT_NAME}
 )
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_23)
 
-if (MODERNA_GENERIC_CONSTEXPR_TESTS)
+if (JOWI_GENERIC_CONSTEXPR_TESTS)
   target_compile_definitions(${PROJECT_NAME} 
     PRIVATE 
-      MODERNA_GENERIC_CONSTEXPR_TESTS
+      JOWI_GENERIC_CONSTEXPR_TESTS
   )
 endif()
 
-if (MODERNA_GENERIC_BUILD_TESTS) 
+if (JOWI_GENERIC_BUILD_TESTS) 
   include (CTest)
   if (NOT TARGET moderna_test_lib)
     add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/libs/test-lib)
@@ -36,29 +36,29 @@ endif()
 
 if (MODERNA_INSTALL)
   include(GNUInstallDirs)
-  set (MODERNA_COMPONENT_NAME "generic")
+  set (JOWI_COMPONENT_NAME "generic")
   set_property(
     TARGET ${PROJECT_NAME} 
-    PROPERTY EXPORT_NAME ${MODERNA_COMPONENT_NAME}
+    PROPERTY EXPORT_NAME ${JOWI_COMPONENT_NAME}
   )
   install (
     TARGETS ${PROJECT_NAME}
-    EXPORT moderna
+    EXPORT jowi
     FILE_SET 
       CXX_MODULES 
-      DESTINATION ${CMAKE_INSTALL_PREFIX}/cxx_modules/moderna/${MODERNA_COMPONENT_NAME}
-      COMPONENT ${MODERNA_COMPONENT_NAME}_file_set
+      DESTINATION ${CMAKE_INSTALL_PREFIX}/cxx_modules/jowi/${JOWI_COMPONENT_NAME}
+      COMPONENT ${JOWI_COMPONENT_NAME}_file_set
     CXX_MODULES_BMI 
-      COMPONENT ${MODERNA_COMPONENT_NAME}
-      DESTINATION ${CMAKE_INSTALL_PREFIX}/cxx_modules/moderna/${MODERNA_COMPONENT_NAME}
+      COMPONENT ${JOWI_COMPONENT_NAME}
+      DESTINATION ${CMAKE_INSTALL_PREFIX}/cxx_modules/jowi/${JOWI_COMPONENT_NAME}
   )
   if (NOT MODERNA_GLOBAL_INSTALL)
     install (
-      EXPORT moderna
-      DESTINATION ${CMAKE_INSTALL_LIBDIR}/moderna
-      FILE moderna-config.cmake
-      NAMESPACE moderna::
-      CXX_MODULES_DIRECTORY cxx_modules/moderna
+      EXPORT jowi
+      DESTINATION ${CMAKE_INSTALL_LIBDIR}/jowi
+      FILE jowi-config.cmake
+      NAMESPACE jowi::
+      CXX_MODULES_DIRECTORY cxx_modules/jowi
     )
   endif()
 endif()

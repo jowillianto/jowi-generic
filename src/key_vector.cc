@@ -4,9 +4,9 @@ module;
 #include <optional>
 #include <ranges>
 #include <vector>
-export module moderna.generic:key_vector;
+export module jowi.generic:key_vector;
 
-namespace moderna::generic {
+namespace jowi::generic {
   export template <class value_type, class other_type>
   concept is_comparable = requires(std::decay_t<value_type> l, std::decay_t<other_type> r) {
     { l == r } -> std::same_as<bool>;

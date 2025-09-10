@@ -1,11 +1,11 @@
 module;
 #include <concepts>
 #include <format>
-export module moderna.generic:static_prec_fp;
+export module jowi.generic:static_prec_fp;
 import :prec_fp;
 import :is_number;
 
-namespace moderna::generic {
+namespace jowi::generic {
   template <std::floating_point num_type, int acc = -1> class static_prec_fp {
     prec_fp<num_type> __value;
 
@@ -59,7 +59,7 @@ namespace moderna::generic {
   export template <int acc = -1> using static_precise_double = static_prec_fp<double, acc>;
 }
 
-namespace generic = moderna::generic;
+namespace generic = jowi::generic;
 
 template <std::floating_point num_type, int acc, class char_type>
 struct std::formatter<generic::static_prec_fp<num_type, acc>, char_type> {

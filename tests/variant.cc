@@ -1,14 +1,14 @@
-import moderna.test_lib;
-import moderna.generic;
-#include <moderna/test_lib.hpp>
+import jowi.test_lib;
+import jowi.generic;
+#include <jowi/test_lib.hpp>
 #include <string>
 #include <vector>
 
-namespace test_lib = moderna::test_lib;
-namespace generic = moderna::generic;
+namespace test_lib = jowi::test_lib;
+namespace generic = jowi::generic;
 ;
 
-MODERNA_ADD_TEST(variant_index_checking) {
+JOWI_ADD_TEST(variant_index_checking) {
   generic::variant<int, std::string, double> v{42};
   test_lib::assert_equal(v.index(), 0);
 
@@ -25,14 +25,14 @@ MODERNA_ADD_TEST(variant_index_checking) {
   test_lib::assert_equal(v.index(), 2);
 }
 
-MODERNA_ADD_TEST(variant_is_correct_type) {
+JOWI_ADD_TEST(variant_is_correct_type) {
   generic::variant<int, std::string, double> v{42};
   test_lib::assert_true(v.is<int>());
   test_lib::assert_false(v.is<std::string>());
   test_lib::assert_false(v.is<double>());
 }
 
-MODERNA_ADD_TEST(variant_is_after_type_change) {
+JOWI_ADD_TEST(variant_is_after_type_change) {
   generic::variant<int, std::string, double> v{42};
   test_lib::assert_true(v.is<int>());
 
@@ -47,27 +47,27 @@ MODERNA_ADD_TEST(variant_is_after_type_change) {
   test_lib::assert_true(v.is<double>());
 }
 
-MODERNA_ADD_TEST(variant_as_successful_conversion) {
+JOWI_ADD_TEST(variant_as_successful_conversion) {
   generic::variant<int, std::string, double> v{42};
   auto result = v.as<int>();
   test_lib::assert_true(result.has_value());
   test_lib::assert_equal(result->get(), 42);
 }
 
-MODERNA_ADD_TEST(variant_as_failed_conversion) {
+JOWI_ADD_TEST(variant_as_failed_conversion) {
   generic::variant<int, std::string, double> v{42};
   auto result = v.as<std::string>();
   test_lib::assert_false(result.has_value());
 }
 
-MODERNA_ADD_TEST(variant_as_const_version) {
+JOWI_ADD_TEST(variant_as_const_version) {
   const generic::variant<int, std::string, double> v{std::string("hello")};
   auto result = v.as<std::string>();
   test_lib::assert_true(result.has_value());
   test_lib::assert_equal(result->get(), std::string("hello"));
 }
 
-MODERNA_ADD_TEST(variant_as_reference_modification) {
+JOWI_ADD_TEST(variant_as_reference_modification) {
   generic::variant<int, std::string, double> v{std::string("original")};
   auto result = v.as<std::string>();
   test_lib::assert_true(result.has_value());
@@ -80,7 +80,7 @@ MODERNA_ADD_TEST(variant_as_reference_modification) {
   test_lib::assert_equal(check_result->get(), std::string("modified"));
 }
 
-MODERNA_ADD_TEST(variant_emplace_functionality) {
+JOWI_ADD_TEST(variant_emplace_functionality) {
   generic::variant<int, std::string, double> v{42};
   test_lib::assert_true(v.is<int>());
 
@@ -93,7 +93,7 @@ MODERNA_ADD_TEST(variant_emplace_functionality) {
   test_lib::assert_equal(v.as<double>()->get(), 3.14);
 }
 
-MODERNA_ADD_TEST(variant_visit_single_function) {
+JOWI_ADD_TEST(variant_visit_single_function) {
   generic::variant<int, std::string, double> v{42};
 
   int result = v.visit([](auto &value) -> int {
@@ -109,7 +109,7 @@ MODERNA_ADD_TEST(variant_visit_single_function) {
   test_lib::assert_equal(result, 84);
 }
 
-MODERNA_ADD_TEST(variant_visit_overload_functions) {
+JOWI_ADD_TEST(variant_visit_overload_functions) {
   generic::variant<int, std::string, double> v{std::string("hello")};
 
   v.visit(
@@ -119,7 +119,7 @@ MODERNA_ADD_TEST(variant_visit_overload_functions) {
   );
 }
 
-MODERNA_ADD_TEST(variant_visit_overload_different_types) {
+JOWI_ADD_TEST(variant_visit_overload_different_types) {
   generic::variant<int, std::string, double> v{3.14};
 
   v.visit(
@@ -129,7 +129,7 @@ MODERNA_ADD_TEST(variant_visit_overload_different_types) {
   );
 }
 
-MODERNA_ADD_TEST(variant_visit_const_version) {
+JOWI_ADD_TEST(variant_visit_const_version) {
   const generic::variant<int, std::string, double> v{3.14159};
 
   v.visit(
@@ -139,7 +139,7 @@ MODERNA_ADD_TEST(variant_visit_const_version) {
   );
 }
 
-MODERNA_ADD_TEST(variant_visit_rvalue_version) {
+JOWI_ADD_TEST(variant_visit_rvalue_version) {
 
   generic::variant<int, std::string, double>{std::string("moved")}.visit(
     [](int &&i) { /* handle int rvalue */ },

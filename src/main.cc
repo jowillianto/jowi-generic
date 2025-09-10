@@ -1,4 +1,4 @@
-export module moderna.generic;
+export module jowi.generic;
 export import :variant;
 export import :prec_fp;
 export import :static_prec_fp;

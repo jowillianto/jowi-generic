@@ -6,10 +6,10 @@ module;
 #include <optional>
 #include <type_traits>
 #include <vector>
-export module moderna.generic:id_vector;
+export module jowi.generic:id_vector;
 import :thread_guard;
 
-namespace moderna::generic {
+namespace jowi::generic {
   template <class T> struct id_vector_entry {
     const size_t id;
     std::shared_ptr<T> value;

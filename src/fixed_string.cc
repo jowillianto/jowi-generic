@@ -3,9 +3,9 @@ module;
 #include <array>
 #include <format>
 #include <string_view>
-export module moderna.generic:fixed_string;
+export module jowi.generic:fixed_string;
 
-namespace moderna::generic {
+namespace jowi::generic {
   /*
     fixed_string
     a static buffer that guarantees that the last character is a null character. Most of the time
@@ -133,7 +133,7 @@ namespace moderna::generic {
   };
 }
 
-namespace generic = moderna::generic;
+namespace generic = jowi::generic;
 template <size_t N, class char_type> struct std::formatter<generic::fixed_string<N>, char_type> {
   constexpr auto parse(auto &ctx) {
     return ctx.begin();
@@ -147,8 +147,8 @@ template <size_t N, class char_type> struct std::formatter<generic::fixed_string
 /*
   constexpr tests
 */
-#ifdef MODERNA_GENERIC_CONSTEXPR_TESTS
-namespace moderna::generic {
+#ifdef JOWI_GENERIC_CONSTEXPR_TESTS
+namespace jowi::generic {
   static_assert(fixed_string{"HELLO"}.length() == 5);
   static_assert(fixed_string<7>{"HELLO"}.length() == 5);
   static_assert(fixed_string{"HELLO"}[0].value().get() == 'H');

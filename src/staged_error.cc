@@ -4,11 +4,11 @@ module;
 #include <string>
 #include <string_view>
 #include <format>
-export module moderna.generic:staged_error;
+export module jowi.generic:staged_error;
 import :static_string;
 import :is_formattable_error;
 
-namespace moderna::generic {
+namespace jowi::generic {
   template <generic::static_string stage, generic::static_string... stages>
   std::optional<std::string> get_stage_name(size_t id) {
     if (id == 0) {

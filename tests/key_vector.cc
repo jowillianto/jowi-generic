@@ -1,31 +1,31 @@
-import moderna.test_lib;
-import moderna.generic;
-#include <moderna/test_lib.hpp>
+import jowi.test_lib;
+import jowi.generic;
+#include <jowi/test_lib.hpp>
 #include <string>
 #include <vector>
 
-namespace test_lib = moderna::test_lib;
-namespace generic = moderna::generic;
+namespace test_lib = jowi::test_lib;
+namespace generic = jowi::generic;
 
-MODERNA_ADD_TEST(key_vector_default_constructor) {
+JOWI_ADD_TEST(key_vector_default_constructor) {
   generic::key_vector<int, std::string> kv;
   test_lib::assert_equal(kv.size(), 0u);
   test_lib::assert_equal(kv.empty(), true);
 }
 
-MODERNA_ADD_TEST(key_vector_initializer_list_constructor) {
+JOWI_ADD_TEST(key_vector_initializer_list_constructor) {
   generic::key_vector<int, std::string> kv{{1, "one"}, {2, "two"}, {3, "three"}};
   test_lib::assert_equal(kv.size(), 3u);
   test_lib::assert_equal(kv.empty(), false);
 }
 
-MODERNA_ADD_TEST(key_vector_container_constructor) {
+JOWI_ADD_TEST(key_vector_container_constructor) {
   std::vector<std::pair<int, std::string>> container{{10, "ten"}, {20, "twenty"}};
   generic::key_vector<int, std::string> kv{std::move(container)};
   test_lib::assert_equal(kv.size(), 2u);
 }
 
-MODERNA_ADD_TEST(key_vector_get_existing_key) {
+JOWI_ADD_TEST(key_vector_get_existing_key) {
   generic::key_vector<int, std::string> kv{{1, "one"}, {2, "two"}, {3, "three"}};
 
   auto result = kv.get(2);
@@ -33,14 +33,14 @@ MODERNA_ADD_TEST(key_vector_get_existing_key) {
   test_lib::assert_equal(result.value().get(), "two");
 }
 
-MODERNA_ADD_TEST(key_vector_get_nonexistent_key) {
+JOWI_ADD_TEST(key_vector_get_nonexistent_key) {
   generic::key_vector<int, std::string> kv{{1, "one"}, {2, "two"}};
 
   auto result = kv.get(99);
   test_lib::assert_equal(result.has_value(), false);
 }
 
-MODERNA_ADD_TEST(key_vector_const_get) {
+JOWI_ADD_TEST(key_vector_const_get) {
   const generic::key_vector<int, std::string> kv{{1, "one"}, {2, "two"}};
 
   auto result = kv.get(1);
@@ -48,7 +48,7 @@ MODERNA_ADD_TEST(key_vector_const_get) {
   test_lib::assert_equal(result.value().get(), "one");
 }
 
-MODERNA_ADD_TEST(key_vector_operator_bracket) {
+JOWI_ADD_TEST(key_vector_operator_bracket) {
   generic::key_vector<int, std::string> kv{{5, "five"}, {10, "ten"}};
 
   auto result = kv[5];
@@ -59,7 +59,7 @@ MODERNA_ADD_TEST(key_vector_operator_bracket) {
   test_lib::assert_equal(missing.has_value(), false);
 }
 
-MODERNA_ADD_TEST(key_vector_const_operator_bracket) {
+JOWI_ADD_TEST(key_vector_const_operator_bracket) {
   const generic::key_vector<int, std::string> kv{{7, "seven"}};
 
   auto result = kv[7];
@@ -67,7 +67,7 @@ MODERNA_ADD_TEST(key_vector_const_operator_bracket) {
   test_lib::assert_equal(result.value().get(), "seven");
 }
 
-MODERNA_ADD_TEST(key_vector_emplace_new_key) {
+JOWI_ADD_TEST(key_vector_emplace_new_key) {
   generic::key_vector<int, std::string> kv;
 
   auto &value = kv.emplace(42, "forty-two");
@@ -79,7 +79,7 @@ MODERNA_ADD_TEST(key_vector_emplace_new_key) {
   test_lib::assert_equal(result.value().get(), "forty-two");
 }
 
-MODERNA_ADD_TEST(key_vector_emplace_existing_key_replaces) {
+JOWI_ADD_TEST(key_vector_emplace_existing_key_replaces) {
   generic::key_vector<int, std::string> kv{{1, "original"}};
 
   auto &value = kv.emplace(1, "replaced");
@@ -90,7 +90,7 @@ MODERNA_ADD_TEST(key_vector_emplace_existing_key_replaces) {
   test_lib::assert_equal(result.value().get(), "replaced");
 }
 
-MODERNA_ADD_TEST(key_vector_insert) {
+JOWI_ADD_TEST(key_vector_insert) {
   generic::key_vector<int, std::string> kv;
 
   auto &value = kv.insert(100, "hundred");
@@ -98,7 +98,7 @@ MODERNA_ADD_TEST(key_vector_insert) {
   test_lib::assert_equal(kv.size(), 1u);
 }
 
-MODERNA_ADD_TEST(key_vector_remove_existing) {
+JOWI_ADD_TEST(key_vector_remove_existing) {
   generic::key_vector<int, std::string> kv{{1, "one"}, {2, "two"}, {3, "three"}};
 
   auto removed = kv.remove(2);
@@ -111,7 +111,7 @@ MODERNA_ADD_TEST(key_vector_remove_existing) {
   test_lib::assert_equal(result.has_value(), false);
 }
 
-MODERNA_ADD_TEST(key_vector_remove_nonexistent) {
+JOWI_ADD_TEST(key_vector_remove_nonexistent) {
   generic::key_vector<int, std::string> kv{{1, "one"}};
 
   auto removed = kv.remove(999);
@@ -119,7 +119,7 @@ MODERNA_ADD_TEST(key_vector_remove_nonexistent) {
   test_lib::assert_equal(kv.size(), 1u);
 }
 
-MODERNA_ADD_TEST(key_vector_iteration) {
+JOWI_ADD_TEST(key_vector_iteration) {
   generic::key_vector<int, std::string> kv{{1, "one"}, {2, "two"}, {3, "three"}};
 
   int count = 0;
@@ -132,7 +132,7 @@ MODERNA_ADD_TEST(key_vector_iteration) {
   test_lib::assert_equal(count, 3);
 }
 
-MODERNA_ADD_TEST(key_vector_const_iteration) {
+JOWI_ADD_TEST(key_vector_const_iteration) {
   const generic::key_vector<int, std::string> kv{{10, "ten"}, {20, "twenty"}};
 
   int count = 0;
@@ -142,7 +142,7 @@ MODERNA_ADD_TEST(key_vector_const_iteration) {
   test_lib::assert_equal(count, 2);
 }
 
-MODERNA_ADD_TEST(key_vector_keys_view) {
+JOWI_ADD_TEST(key_vector_keys_view) {
   generic::key_vector<int, std::string> kv{{5, "five"}, {15, "fifteen"}, {25, "twenty-five"}};
 
   auto keys_view = kv.keys();
@@ -159,7 +159,7 @@ MODERNA_ADD_TEST(key_vector_keys_view) {
   test_lib::assert_equal(keys_vec[2], 25);
 }
 
-MODERNA_ADD_TEST(key_vector_string_keys) {
+JOWI_ADD_TEST(key_vector_string_keys) {
   generic::key_vector<std::string, int> kv{{"hello", 1}, {"world", 2}, {"test", 3}};
 
   auto result = kv.get("world");
@@ -170,7 +170,7 @@ MODERNA_ADD_TEST(key_vector_string_keys) {
   test_lib::assert_equal(kv.size(), 4u);
 }
 
-MODERNA_ADD_TEST(key_vector_modification_through_reference) {
+JOWI_ADD_TEST(key_vector_modification_through_reference) {
   generic::key_vector<int, std::string> kv{{1, "original"}};
 
   auto result = kv.get(1);
@@ -183,7 +183,7 @@ MODERNA_ADD_TEST(key_vector_modification_through_reference) {
   test_lib::assert_equal(check.value().get(), "modified");
 }
 
-MODERNA_ADD_TEST(key_vector_comparable_concept) {
+JOWI_ADD_TEST(key_vector_comparable_concept) {
   generic::key_vector<int, std::string> kv{{42, "answer"}};
 
   // Test that we can use different but comparable types
@@ -193,7 +193,7 @@ MODERNA_ADD_TEST(key_vector_comparable_concept) {
   test_lib::assert_equal(result.value().get(), "answer");
 }
 
-MODERNA_ADD_TEST(key_vector_empty_after_removal) {
+JOWI_ADD_TEST(key_vector_empty_after_removal) {
   generic::key_vector<int, std::string> kv{{1, "only"}};
 
   test_lib::assert_equal(kv.empty(), false);

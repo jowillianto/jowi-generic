@@ -1,9 +1,9 @@
 module;
 #include <concepts>
 #include <tuple>
-export module moderna.generic:invoker;
+export module jowi.generic:invoker;
 
-namespace moderna::generic {
+namespace jowi::generic {
   export template <class... Args> struct invoker {
     std::tuple<Args...> args;
     invoker(Args... args) : args{std::forward<Args>(args)...} {}

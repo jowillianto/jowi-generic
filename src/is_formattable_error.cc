@@ -2,9 +2,9 @@ module;
 #include <format>
 #include <memory>
 #include <string>
-export module moderna.generic:is_formattable_error;
+export module jowi.generic:is_formattable_error;
 
-namespace moderna::generic {
+namespace jowi::generic {
   export template <class E>
   concept is_formattable_error = std::derived_from<E, std::exception> || std::formattable<E, char>;
 
@@ -19,7 +19,7 @@ namespace moderna::generic {
     }
   };
 }
-namespace generic = moderna::generic;
+namespace generic = jowi::generic;
 template <class char_type> struct std::formatter<generic::error_formatter, char_type> {
   constexpr auto parse(auto &ctx) {
     return ctx.begin();

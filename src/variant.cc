@@ -3,9 +3,9 @@ module;
 #include <functional>
 #include <optional>
 #include <variant>
-export module moderna.generic:variant;
+export module jowi.generic:variant;
 
-namespace moderna::generic {
+namespace jowi::generic {
   template <class test___value, class... test_targets>
   concept is_in_target = (std::same_as<test___value, test_targets> || ...);
 

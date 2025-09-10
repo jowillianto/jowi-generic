@@ -1,12 +1,12 @@
-import moderna.test_lib;
-import moderna.generic;
-#include <moderna/test_lib.hpp>
+import jowi.test_lib;
+import jowi.generic;
+#include <jowi/test_lib.hpp>
 #include <string>
 
-namespace test_lib = moderna::test_lib;
-namespace generic = moderna::generic;
+namespace test_lib = jowi::test_lib;
+namespace generic = jowi::generic;
 
-MODERNA_ADD_TEST(string_always_ends_with_null) {
+JOWI_ADD_TEST(string_always_ends_with_null) {
   generic::fixed_string<10> fs{"hello"};
   // The buffer should always have null terminator at the end
   test_lib::assert_equal(fs.c_str()[fs.length()], '\0');
@@ -16,7 +16,7 @@ MODERNA_ADD_TEST(string_always_ends_with_null) {
   test_lib::assert_equal(empty_fs.c_str()[0], '\0');
 }
 
-MODERNA_ADD_TEST(end_is_always_accessible_and_dereferencable) {
+JOWI_ADD_TEST(end_is_always_accessible_and_dereferencable) {
   generic::fixed_string<10> fs{"test"};
 
   // end() should be dereferenceable and point to null terminator
@@ -31,7 +31,7 @@ MODERNA_ADD_TEST(end_is_always_accessible_and_dereferencable) {
   test_lib::assert_equal(*fs.end(), '\0');
 }
 
-MODERNA_ADD_TEST(emplace_back_increases_size_until_limit) {
+JOWI_ADD_TEST(emplace_back_increases_size_until_limit) {
   generic::fixed_string<5> fs;
   test_lib::assert_equal(fs.size(), 0u);
 
@@ -60,7 +60,7 @@ MODERNA_ADD_TEST(emplace_back_increases_size_until_limit) {
   test_lib::assert_equal(sv, "abcde");
 }
 
-MODERNA_ADD_TEST(emplace_format_formats_up_to_size) {
+JOWI_ADD_TEST(emplace_format_formats_up_to_size) {
   generic::fixed_string<10> fs;
 
   // Format string that fits
@@ -79,7 +79,7 @@ MODERNA_ADD_TEST(emplace_format_formats_up_to_size) {
   test_lib::assert_equal(sv2, "this is a ");
 }
 
-MODERNA_ADD_TEST(end_is_always_null_terminator) {
+JOWI_ADD_TEST(end_is_always_null_terminator) {
   generic::fixed_string<8> fs{"abc"};
   test_lib::assert_equal(*fs.end(), '\0');
 
@@ -96,7 +96,7 @@ MODERNA_ADD_TEST(end_is_always_null_terminator) {
   test_lib::assert_equal(fs.size(), 8u);
 }
 
-MODERNA_ADD_TEST(begin_end_represents_string_without_null) {
+JOWI_ADD_TEST(begin_end_represents_string_without_null) {
   generic::fixed_string<10> fs{"world"};
 
   // Distance between begin and end should equal length
@@ -115,7 +115,7 @@ MODERNA_ADD_TEST(begin_end_represents_string_without_null) {
   test_lib::assert_equal(*empty_fs.end(), '\0');
 }
 
-MODERNA_ADD_TEST(string_view_conversion_excludes_null) {
+JOWI_ADD_TEST(string_view_conversion_excludes_null) {
   generic::fixed_string<15> fs{"test string"};
 
   std::string_view sv = fs;
@@ -126,7 +126,7 @@ MODERNA_ADD_TEST(string_view_conversion_excludes_null) {
   test_lib::assert_equal(sv.data()[sv.length()], '\0');
 }
 
-MODERNA_ADD_TEST(truncate_resets_to_empty_with_null_terminator) {
+JOWI_ADD_TEST(truncate_resets_to_empty_with_null_terminator) {
   generic::fixed_string<10> fs{"hello"};
   test_lib::assert_equal(fs.size(), 5u);
 
@@ -139,7 +139,7 @@ MODERNA_ADD_TEST(truncate_resets_to_empty_with_null_terminator) {
   test_lib::assert_equal(sv.empty(), true);
 }
 
-MODERNA_ADD_TEST(equality_operator_same_content) {
+JOWI_ADD_TEST(equality_operator_same_content) {
   generic::fixed_string<10> fs{"hello"};
   std::string_view sv{"hello"};
 
@@ -147,7 +147,7 @@ MODERNA_ADD_TEST(equality_operator_same_content) {
   test_lib::assert_equal(fs == "hello", true);
 }
 
-MODERNA_ADD_TEST(equality_operator_different_content) {
+JOWI_ADD_TEST(equality_operator_different_content) {
   generic::fixed_string<10> fs{"hello"};
   std::string_view sv{"world"};
 
@@ -155,14 +155,14 @@ MODERNA_ADD_TEST(equality_operator_different_content) {
   test_lib::assert_equal(fs == "world", false);
 }
 
-MODERNA_ADD_TEST(equality_operator_different_length) {
+JOWI_ADD_TEST(equality_operator_different_length) {
   generic::fixed_string<10> fs{"hello"};
 
   test_lib::assert_equal(fs == "hi", false);
   test_lib::assert_equal(fs == "hello world", false);
 }
 
-MODERNA_ADD_TEST(equality_operator_empty_strings) {
+JOWI_ADD_TEST(equality_operator_empty_strings) {
   generic::fixed_string<10> fs;
   std::string_view empty_sv{""};
 
@@ -170,7 +170,7 @@ MODERNA_ADD_TEST(equality_operator_empty_strings) {
   test_lib::assert_equal(fs == "", true);
 }
 
-MODERNA_ADD_TEST(equality_operator_after_modifications) {
+JOWI_ADD_TEST(equality_operator_after_modifications) {
   generic::fixed_string<10> fs;
   fs.emplace_format("{}", "test");
 
@@ -181,12 +181,12 @@ MODERNA_ADD_TEST(equality_operator_after_modifications) {
   test_lib::assert_equal(fs == "test", false);
 }
 
-MODERNA_ADD_TEST(construction_with_overflowing_string) {
+JOWI_ADD_TEST(construction_with_overflowing_string) {
   generic::fixed_string<5> fs{std::string{"HELLO WORLD"}};
   test_lib::assert_equal(fs, "HELLO");
 }
 
-MODERNA_ADD_TEST(construction_with_undeflow_string) {
+JOWI_ADD_TEST(construction_with_undeflow_string) {
   generic::fixed_string<10> fs{std::string{"HELLO"}};
   test_lib::assert_equal(fs, "HELLO");
   test_lib::assert_equal(fs.length(), 5);
