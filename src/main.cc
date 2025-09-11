@@ -10,3 +10,4 @@ export import :key_vector;
 export import :thread_guard;
 export import :invoker;
 export import :fixed_string;
+export import :dependency_injection;
