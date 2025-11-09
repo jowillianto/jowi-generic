@@ -6,11 +6,11 @@ module;
 export module jowi.generic:variant;
 
 namespace jowi::generic {
-  template <class test___value, class... test_targets>
-  concept is_in_target = (std::same_as<test___value, test_targets> || ...);
+  template <class TestValue, class... TestTargets>
+  concept IsInTarget = (std::same_as<TestValue, TestTargets> || ...);
 
-  template <class... overloads> struct variant_visitor_overload : overloads... {
-    using overloads::operator()...;
+  template <class... Overloads> struct VariantVisitorOverload : Overloads... {
+    using Overloads::operator()...;
   };
 
   /*
@@ -18,22 +18,22 @@ namespace jowi::generic {
     becomes more convenient for any API user. No additional features has been added except the fact
     that the variant is now exception safe.
   */
-  export template <typename... variants> class variant {
+  export template <typename... Variants> class Variant {
   private:
-    using variant_type = std::variant<variants...>;
-    variant_type __value;
+    using VariantType = std::variant<Variants...>;
+    VariantType __value;
 
   public:
-    template <typename... Args> requires(std::constructible_from<variant_type, Args...>)
-    constexpr variant(Args &&...args) : __value{std::forward<Args>(args)...} {}
+    template <typename... Args> requires(std::constructible_from<VariantType, Args...>)
+    constexpr Variant(Args &&...args) : __value{std::forward<Args>(args)...} {}
 
-    template <class T> requires(std::assignable_from<variant_type &, T>)
-    constexpr variant &operator=(T &&t) {
+    template <class T> requires(std::assignable_from<VariantType &, T>)
+    constexpr Variant &operator=(T &&t) {
       __value = std::forward<T>(t);
       return *this;
     }
-    template <is_in_target<variants...> T, class... Args>
-    constexpr variant &emplace(Args &&...args) noexcept {
+    template <IsInTarget<Variants...> T, class... Args>
+    constexpr Variant &emplace(Args &&...args) noexcept {
       __value.template emplace<T>(std::forward<Args>(args)...);
       return *this;
     }
@@ -45,39 +45,39 @@ namespace jowi::generic {
     /**
       variant checking functions.
     */
-    template <is_in_target<variants...> test_type> constexpr bool is() const noexcept {
-      return std::holds_alternative<test_type>(__value);
+    template <IsInTarget<Variants...> TestType> constexpr bool is() const noexcept {
+      return std::holds_alternative<TestType>(__value);
     }
 
     /**
       casting functions
     */
-    template <is_in_target<variants...> test_type>
-    constexpr std::optional<std::reference_wrapper<test_type>> as() noexcept {
-      using optional_type = std::optional<std::reference_wrapper<test_type>>;
+    template <IsInTarget<Variants...> TestType>
+    constexpr std::optional<std::reference_wrapper<TestType>> as() noexcept {
+      using OptionalType = std::optional<std::reference_wrapper<TestType>>;
       return std::visit(
-        [](auto &v) -> optional_type {
-          using current_type = std::decay_t<decltype(v)>;
-          if constexpr (std::same_as<current_type, test_type>) {
-            return optional_type{std::ref(v)};
+        [](auto &v) -> OptionalType {
+          using CurrentType = std::decay_t<decltype(v)>;
+          if constexpr (std::same_as<CurrentType, TestType>) {
+            return OptionalType{std::ref(v)};
           } else {
-            return optional_type{};
+            return OptionalType{};
           }
         },
         __value
       );
     }
 
-    template <is_in_target<variants...> test_type>
-    constexpr std::optional<std::reference_wrapper<const test_type>> as() const noexcept {
-      using optional_type = std::optional<std::reference_wrapper<const test_type>>;
+    template <IsInTarget<Variants...> TestType>
+    constexpr std::optional<std::reference_wrapper<const TestType>> as() const noexcept {
+      using OptionalType = std::optional<std::reference_wrapper<const TestType>>;
       return std::visit(
-        [](auto &v) -> optional_type {
-          using current_type = std::decay_t<decltype(v)>;
-          if constexpr (std::same_as<current_type, test_type>) {
-            return optional_type{std::cref(v)};
+        [](auto &v) -> OptionalType {
+          using CurrentType = std::decay_t<decltype(v)>;
+          if constexpr (std::same_as<CurrentType, TestType>) {
+            return OptionalType{std::cref(v)};
           } else {
-            return optional_type{};
+            return OptionalType{};
           }
         },
         __value
@@ -87,20 +87,20 @@ namespace jowi::generic {
     /**
       visitor functions
     */
-    template <class... F>
-    requires(std::invocable<variant_visitor_overload<F...>, variants &> && ...)
-    constexpr auto visit(F &&...f) & {
-      return std::visit(variant_visitor_overload<F...>{std::forward<F>(f)...}, __value);
+    template <class... Functions>
+    requires(std::invocable<VariantVisitorOverload<Functions...>, Variants &> && ...)
+    constexpr auto visit(Functions &&...f) & {
+      return std::visit(VariantVisitorOverload<Functions...>{std::forward<Functions>(f)...}, __value);
     }
-    template <class... F>
-    requires(std::invocable<variant_visitor_overload<F...>, const variants &> && ...)
-    constexpr auto visit(F &&...f) const & {
-      return std::visit(variant_visitor_overload<F...>{std::forward<F>(f)...}, __value);
+    template <class... Functions>
+    requires(std::invocable<VariantVisitorOverload<Functions...>, const Variants &> && ...)
+    constexpr auto visit(Functions &&...f) const & {
+      return std::visit(VariantVisitorOverload<Functions...>{std::forward<Functions>(f)...}, __value);
     }
-    template <class... F>
-    requires(std::invocable<variant_visitor_overload<F...>, variants &&> && ...)
-    constexpr auto visit(F &&...f) && {
-      return std::visit(variant_visitor_overload<F...>{std::forward<F>(f)...}, std::move(__value));
+    template <class... Functions>
+    requires(std::invocable<VariantVisitorOverload<Functions...>, Variants &&> && ...)
+    constexpr auto visit(Functions &&...f) && {
+      return std::visit(VariantVisitorOverload<Functions...>{std::forward<Functions>(f)...}, std::move(__value));
     }
   };
 }

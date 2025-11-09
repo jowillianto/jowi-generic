@@ -7,19 +7,19 @@ module;
 export module jowi.generic:key_vector;
 
 namespace jowi::generic {
-  export template <class value_type, class other_type>
-  concept is_comparable = requires(std::decay_t<value_type> l, std::decay_t<other_type> r) {
+  export template <class ValueType, class OtherType>
+  concept IsComparable = requires(std::decay_t<ValueType> l, std::decay_t<OtherType> r) {
     { l == r } -> std::same_as<bool>;
   };
-  export template <class key_type, class value_type> class key_vector {
-    using entry_type = std::pair<key_type, value_type>;
-    using container_type = std::vector<entry_type>;
-    container_type __values;
+  export template <class KeyType, class ValueType> class KeyVector {
+    using EntryType = std::pair<KeyType, ValueType>;
+    using ContainerType = std::vector<EntryType>;
+    ContainerType __values;
 
   public:
-    constexpr key_vector() : __values{} {}
-    constexpr key_vector(container_type container) : __values{std::move(container)} {}
-    constexpr key_vector(std::initializer_list<std::pair<key_type, value_type>> list) {
+    constexpr KeyVector() : __values{} {}
+    constexpr KeyVector(ContainerType container) : __values{std::move(container)} {}
+    constexpr KeyVector(std::initializer_list<std::pair<KeyType, ValueType>> list) {
       __values.reserve(list.size());
       for (auto &&[key, value] : list) {
         insert(std::move(key), std::move(value));
@@ -29,60 +29,60 @@ namespace jowi::generic {
     /*
       element getters.
     */
-    template <is_comparable<key_type> Key>
-    constexpr std::optional<std::reference_wrapper<const value_type>> get(Key &&k) const noexcept {
-      auto it = std::ranges::find(__values, std::forward<Key>(k), &entry_type::first);
+    template <IsComparable<KeyType> Key>
+    constexpr std::optional<std::reference_wrapper<const ValueType>> get(Key &&k) const noexcept {
+      auto it = std::ranges::find(__values, std::forward<Key>(k), &EntryType::first);
       if (it == __values.end()) {
         return std::nullopt;
       } else {
         return std::cref(it->second);
       }
     }
-    template <is_comparable<key_type> Key>
-    constexpr std::optional<std::reference_wrapper<value_type>> get(Key &&k) noexcept {
-      auto it = std::ranges::find(__values, std::forward<Key>(k), &entry_type::first);
+    template <IsComparable<KeyType> Key>
+    constexpr std::optional<std::reference_wrapper<ValueType>> get(Key &&k) noexcept {
+      auto it = std::ranges::find(__values, std::forward<Key>(k), &EntryType::first);
       if (it == __values.end()) {
         return std::nullopt;
       } else {
         return std::ref(it->second);
       }
     }
-    template <is_comparable<key_type> Key>
-    constexpr std::optional<std::reference_wrapper<const value_type>> operator[](
+    template <IsComparable<KeyType> Key>
+    constexpr std::optional<std::reference_wrapper<const ValueType>> operator[](
       Key &&key
     ) const noexcept {
       return get(std::forward<Key>(key));
     }
-    template <is_comparable<key_type> Key>
-    constexpr std::optional<std::reference_wrapper<value_type>> operator[](Key &&key) noexcept {
+    template <IsComparable<KeyType> Key>
+    constexpr std::optional<std::reference_wrapper<ValueType>> operator[](Key &&key) noexcept {
       return get(std::forward<Key>(key));
     }
 
     /*
       element inserts
     */
-    template <is_comparable<key_type> Key, class... Args>
-    requires(std::is_constructible_v<key_type, Key> && std::is_constructible_v<value_type, Args...>)
-    constexpr value_type &emplace(Key &&key, Args &&...args) {
-      auto it = std::ranges::find(__values, key, &entry_type::first);
+    template <IsComparable<KeyType> Key, class... Args>
+    requires(std::is_constructible_v<KeyType, Key> && std::is_constructible_v<ValueType, Args...>)
+    constexpr ValueType &emplace(Key &&key, Args &&...args) {
+      auto it = std::ranges::find(__values, key, &EntryType::first);
       if (it != __values.end()) {
-        it->second = value_type{std::forward<Args>(args)...};
+        it->second = ValueType{std::forward<Args>(args)...};
         return it->second;
       } else {
         return __values
-          .emplace_back(key_type{std::forward<Key>(key)}, value_type{std::forward<Args>(args)...})
+          .emplace_back(KeyType{std::forward<Key>(key)}, ValueType{std::forward<Args>(args)...})
           .second;
       }
     }
-    constexpr value_type &insert(const key_type &key, value_type value) {
+    constexpr ValueType &insert(const KeyType &key, ValueType value) {
       return emplace(key, std::move(value));
     }
-    template <is_comparable<key_type> Key> constexpr std::optional<value_type> remove(Key &&key) {
-      auto it = std::ranges::find(__values, std::forward<Key>(key), &entry_type::first);
+    template <IsComparable<KeyType> Key> constexpr std::optional<ValueType> remove(Key &&key) {
+      auto it = std::ranges::find(__values, std::forward<Key>(key), &EntryType::first);
       if (it == __values.end()) {
         return std::nullopt;
       } else {
-        value_type value = std::move(it->second);
+        ValueType value = std::move(it->second);
         __values.erase(it);
         return std::optional{std::move(value)};
       }
@@ -109,7 +109,7 @@ namespace jowi::generic {
     }
 
     constexpr auto keys() const noexcept {
-      return std::ranges::transform_view{__values, &entry_type::first};
+      return std::ranges::transform_view{__values, &EntryType::first};
     }
   };
 }

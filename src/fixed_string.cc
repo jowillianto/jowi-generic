@@ -7,12 +7,12 @@ export module jowi.generic:fixed_string;
 
 namespace jowi::generic {
   /*
-    fixed_string
+    FixedString
     a static buffer that guarantees that the last character is a null character. Most of the time
     this can be used to written exceptions so that everything is noexcept.
   */
   export template <size_t N> requires(N > 1)
-  struct fixed_string {
+  struct FixedString {
   private:
     // The last character is reserved for the null string and should never be touched.
     std::array<char, N + 1> __buf;
@@ -20,18 +20,19 @@ namespace jowi::generic {
     size_t __len;
 
   public:
+    using ValueType = char;
     using value_type = char;
-    constexpr fixed_string() noexcept : __buf{0}, __len{0} {}
+    constexpr FixedString() noexcept : __buf{0}, __len{0} {}
     template <size_t N2> requires(N2 < N)
-    constexpr fixed_string(const char (&s)[N2]) noexcept : fixed_string() {
+    constexpr FixedString(const char (&s)[N2]) noexcept : FixedString() {
       std::ranges::copy_n(s, N2 - 1, __buf.begin());
       __len = N2 - 1;
     }
-    constexpr fixed_string(const char (&s)[N]) noexcept : fixed_string() {
+    constexpr FixedString(const char (&s)[N]) noexcept : FixedString() {
       std::ranges::copy_n(s, N - 1, __buf.begin());
       __len = N - 1;
     }
-    constexpr fixed_string(std::string_view c) noexcept : fixed_string() {
+    constexpr FixedString(std::string_view c) noexcept : FixedString() {
       __len = std::min(c.length(), N);
       std::ranges::copy_n(c.begin(), __len, __buf.begin());
     }
@@ -112,7 +113,7 @@ namespace jowi::generic {
     }
 
     // Comparison Operator
-    friend constexpr bool operator==(const fixed_string<N> &l, std::string_view r) {
+    friend constexpr bool operator==(const FixedString<N> &l, std::string_view r) {
       if (l.length() != r.length()) {
         return false;
       }
@@ -123,22 +124,23 @@ namespace jowi::generic {
       }
       return true;
     }
-    template <size_t N_R>
-    friend constexpr bool operator==(const fixed_string<N> &l, const char (&r)[N_R]) {
-      return l == std::string_view{r, r + N_R};
+    template <size_t NR>
+    friend constexpr bool operator==(const FixedString<N> &l, const char (&r)[NR]) {
+      return l == std::string_view{r, r + NR};
     }
-    friend constexpr bool operator==(const fixed_string<N> &l, const char *r) {
+    friend constexpr bool operator==(const FixedString<N> &l, const char *r) {
       return l == std::string_view{r};
     }
   };
 }
 
 namespace generic = jowi::generic;
-template <size_t N, class char_type> struct std::formatter<generic::fixed_string<N>, char_type> {
+
+template <size_t N, class CharType> struct std::formatter<generic::FixedString<N>, CharType> {
   constexpr auto parse(auto &ctx) {
     return ctx.begin();
   }
-  constexpr auto format(const generic::fixed_string<N> &s, auto &ctx) const {
+  constexpr auto format(const generic::FixedString<N> &s, auto &ctx) const {
     std::format_to(ctx.out(), "{}", std::string_view{s});
     return ctx.out();
   }
@@ -149,12 +151,12 @@ template <size_t N, class char_type> struct std::formatter<generic::fixed_string
 */
 #ifdef JOWI_GENERIC_CONSTEXPR_TESTS
 namespace jowi::generic {
-  static_assert(fixed_string{"HELLO"}.length() == 5);
-  static_assert(fixed_string<7>{"HELLO"}.length() == 5);
-  static_assert(fixed_string{"HELLO"}[0].value().get() == 'H');
+  static_assert(FixedString{"HELLO"}.length() == 5);
+  static_assert(FixedString<7>{"HELLO"}.length() == 5);
+  static_assert(FixedString{"HELLO"}[0].value().get() == 'H');
 
-  constexpr fixed_string<20> test_hello_format() {
-    fixed_string<20> v;
+  constexpr FixedString<20> test_hello_format() {
+    FixedString<20> v;
     v.emplace_format("{}", "Hello World");
     return v;
   }

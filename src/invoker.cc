@@ -4,9 +4,9 @@ module;
 export module jowi.generic:invoker;
 
 namespace jowi::generic {
-  export template <class... Args> struct invoker {
+  export template <class... Args> struct Invoker {
     std::tuple<Args...> args;
-    invoker(Args... args) : args{std::forward<Args>(args)...} {}
+    Invoker(Args... args) : args{std::forward<Args>(args)...} {}
 
     template <std::invocable<Args...> F> std::invoke_result_t<F, Args...> operator()(F &&f) {
       return std::apply(

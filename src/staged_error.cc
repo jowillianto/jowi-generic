@@ -9,7 +9,7 @@ import :static_string;
 import :is_formattable_error;
 
 namespace jowi::generic {
-  template <generic::static_string stage, generic::static_string... stages>
+  template <StaticString stage, StaticString... stages>
   std::optional<std::string> get_stage_name(size_t id) {
     if (id == 0) {
       return stage.as_string();
@@ -19,12 +19,12 @@ namespace jowi::generic {
       return get_stage_name<stages...>(id);
     }
   }
-  export template <generic::static_string... stages> class staged_error : public std::exception {
+  export template <StaticString... stages> class StagedError : public std::exception {
     std::string __msg;
     size_t __stage;
 
   public:
-    staged_error(std::string msg, size_t stage) : __msg{std::move(msg)}, __stage{stage} {}
+    StagedError(std::string msg, size_t stage) : __msg{std::move(msg)}, __stage{stage} {}
     size_t stage() const noexcept {
       return __stage;
     }
@@ -38,12 +38,13 @@ namespace jowi::generic {
       return std::string_view{__msg.c_str()};
     }
   };
-  export template <generic::static_string... stages> struct staged_error_creator {
-    using error_type = staged_error<stages...>;
+  export template <StaticString... stages> struct StagedErrorCreator {
+    using ErrorType = StagedError<stages...>;
     size_t stage;
 
-    error_type operator()(const generic::is_formattable_error auto &e) {
-      return error_type{std::format("{}", error_formatter{e}), stage};
+    ErrorType operator()(const IsFormattableError auto &e) {
+      return ErrorType{std::format("{}", ErrorFormatter{e}), stage};
     }
   };
 }
+namespace generic = jowi::generic;

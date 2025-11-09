@@ -9,10 +9,10 @@ namespace jowi::generic {
   /*
     Precise Number limits the amount of decimals
   */
-  export template <std::floating_point num_type> class prec_fp {
+  export template <std::floating_point NumType> class PrecFp {
     int __precision;
-    num_type __multiplier;
-    num_type __value;
+    NumType __multiplier;
+    NumType __value;
 
     constexpr void __round() {
       if (__precision < 0) {
@@ -22,34 +22,34 @@ namespace jowi::generic {
     }
 
   public:
-    template <typename T> requires(std::assignable_from<num_type &, T>)
-    constexpr prec_fp(T &&v, int precision) {
+    template <typename T> requires(std::assignable_from<NumType &, T>)
+    constexpr PrecFp(T &&v, int precision) {
       __value = std::forward<T>(v);
       set_precision(precision);
     }
 
     // Operator overloads
-    template <typename T> requires(std::assignable_from<num_type &, T>)
-    constexpr prec_fp &operator=(T &&v) {
+    template <typename T> requires(std::assignable_from<NumType &, T>)
+    constexpr PrecFp &operator=(T &&v) {
       __value = std::forward<T>(v);
       __round();
       return *this;
     }
-    template <typename T> requires(std::assignable_from<T &, num_type>)
+    template <typename T> requires(std::assignable_from<T &, NumType>)
     constexpr operator T() const {
       return __value;
     }
-    template <std::equality_comparable_with<num_type> r_num_type>
-    friend bool operator==(const prec_fp &l, const prec_fp<r_num_type> &r) {
+    template <std::equality_comparable_with<NumType> RNumType>
+    friend bool operator==(const PrecFp &l, const PrecFp<RNumType> &r) {
       return l.value() == r.value();
     }
-    template <is_number r_num_type> requires(std::equality_comparable_with<num_type, r_num_type>)
-    friend bool operator==(const prec_fp &l, const r_num_type &r) {
+    template <IsNumber RNumType> requires(std::equality_comparable_with<NumType, RNumType>)
+    friend bool operator==(const PrecFp &l, const RNumType &r) {
       return l.value() == r;
     }
 
     // Getter Function
-    constexpr num_type value() const noexcept {
+    constexpr NumType value() const noexcept {
       return __value;
     }
     constexpr int precision() const noexcept {
@@ -57,31 +57,30 @@ namespace jowi::generic {
     }
 
     // Setter Function
-    constexpr prec_fp &set_precision(int new_precision) noexcept {
+    constexpr PrecFp &set_precision(int new_precision) noexcept {
       __precision = new_precision;
       __multiplier = std::pow(10, __precision);
       __round();
       return *this;
     }
-    template <typename T> requires(std::assignable_from<num_type &, T>)
-    constexpr prec_fp &set_value(T &&v) {
+    template <typename T> requires(std::assignable_from<NumType &, T>)
+    constexpr PrecFp &set_value(T &&v) {
       __value = std::forward<T>(v);
       __round();
       return *this;
     }
   };
-  export using precise_float = prec_fp<float>;
-  export using precise_double = prec_fp<double>;
+  export using PreciseFloat = PrecFp<float>;
+  export using PreciseDouble = PrecFp<double>;
 }
-
 namespace generic = jowi::generic;
 
-template <std::floating_point num_type, class char_type>
-struct std::formatter<generic::prec_fp<num_type>, char_type> {
+template <std::floating_point NumType, class CharType>
+struct std::formatter<generic::PrecFp<NumType>, CharType> {
   constexpr auto parse(auto &ctx) {
     return ctx.begin();
   }
-  constexpr auto format(const generic::prec_fp<num_type> &v, auto &ctx) const {
+  constexpr auto format(const generic::PrecFp<NumType> &v, auto &ctx) const {
     auto num = v.value();
     if (v.precision() < 0) {
       return std::format_to(ctx.out(), "{}", num);

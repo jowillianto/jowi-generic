@@ -6,11 +6,11 @@ module;
 export module jowi.generic:thread_guard;
 
 namespace jowi::generic {
-  export class bool_mutex {
+  export class BoolMutex {
     std::atomic_flag __flag;
 
   public:
-    bool_mutex() : __flag{false} {}
+    BoolMutex() : __flag{false} {}
 
     void lock() noexcept {
 
@@ -32,13 +32,13 @@ namespace jowi::generic {
       return !is_previously_locked;
     }
   };
-  export template <class T, class mutex_type = bool_mutex> class thread_guard {
+  export template <class T, class MutexType = BoolMutex> class ThreadGuard {
     T __value;
-    mutable mutex_type __mut;
+    mutable MutexType __mut;
 
   public:
-    thread_guard(T value) : __value{std::move(value)} {}
-    thread_guard()
+    ThreadGuard(T value) : __value{std::move(value)} {}
+    ThreadGuard()
       requires(std::is_default_constructible_v<T>)
     {}
 

@@ -11,12 +11,12 @@ export module jowi.generic:static_string;
 
 namespace jowi::generic {
   export enum struct padding_type { front, back };
-  export template <size_t N, bool is_mutable> struct static_string_view {
-    using pointer_type = std::conditional_t<is_mutable, char *, const char *>;
-    pointer_type __beg;
-    pointer_type __end;
-    constexpr static_string_view(pointer_type beg, pointer_type end) : __beg{beg}, __end{end} {}
-    constexpr static_string_view(const static_string_view<N, false> &s) :
+  export template <size_t N, bool IsMutable> struct StaticStringView {
+    using PointerType = std::conditional_t<IsMutable, char *, const char *>;
+    PointerType __beg;
+    PointerType __end;
+    constexpr StaticStringView(PointerType Beg, PointerType end) : __beg{Beg}, __end{end} {}
+    constexpr StaticStringView(const StaticStringView<N, false> &s) :
       __beg{s.__beg}, __end{s.__end} {}
 
     // Getters
@@ -30,7 +30,7 @@ namespace jowi::generic {
       }
     }
     constexpr std::optional<std::reference_wrapper<char>> operator[](size_t id) noexcept
-      requires(is_mutable)
+      requires(IsMutable)
     {
       if (id < N) {
         return std::ref(*(__beg + id));
@@ -40,31 +40,31 @@ namespace jowi::generic {
     }
 
     // Iterators
-    constexpr pointer_type begin() const noexcept {
+    constexpr PointerType begin() const noexcept {
       return __beg;
     }
-    constexpr pointer_type end() const noexcept {
+    constexpr PointerType end() const noexcept {
       return __end;
     }
-    constexpr char *begin() noexcept requires(is_mutable)
+    constexpr char *begin() noexcept requires(IsMutable)
     {
       return __beg;
     }
-    constexpr char *end() noexcept requires(is_mutable)
+    constexpr char *end() noexcept requires(IsMutable)
     {
       return __end;
     }
 
     // String Operations
-    template <size_t begin_pos, size_t length> requires(begin_pos + length <= N)
-    constexpr static_string_view<length, is_mutable> substr() noexcept {
-      return static_string_view<length, is_mutable>{
-        begin() + begin_pos, begin() + begin_pos + length
+    template <size_t BeginPos, size_t Length> requires(BeginPos + Length <= N)
+    constexpr StaticStringView<Length, IsMutable> substr() noexcept {
+      return StaticStringView<Length, IsMutable>{
+        begin() + BeginPos, begin() + BeginPos + Length
       };
     }
-    template <size_t begin_pos, size_t length> requires(begin_pos + length <= N)
-    constexpr static_string_view<length, false> substr() const noexcept {
-      return static_string_view<length, false>{begin() + begin_pos, begin() + begin_pos + length};
+    template <size_t BeginPos, size_t Length> requires(BeginPos + Length <= N)
+    constexpr StaticStringView<Length, false> substr() const noexcept {
+      return StaticStringView<Length, false>{begin() + BeginPos, begin() + BeginPos + Length};
     }
     constexpr std::string_view as_view() const noexcept {
       return std::string_view{begin(), begin() + N};
@@ -72,40 +72,40 @@ namespace jowi::generic {
     constexpr std::string as_string() const {
       return std::string{begin(), begin() + N};
     }
-    template <size_t beg>
-    constexpr static_string_view<N, is_mutable> &emplace(const char (&str)[N - beg + 1]) noexcept
-      requires(is_mutable)
+    template <size_t Beg>
+    constexpr StaticStringView<N, IsMutable> &emplace(const char (&str)[N - Beg + 1]) noexcept
+      requires(IsMutable)
     {
-      std::ranges::copy_n(std::ranges::begin(str), N - beg, begin() + beg);
+      std::ranges::copy_n(std::ranges::begin(str), N - Beg, begin() + Beg);
       return *this;
     }
-    constexpr static_string_view<N, is_mutable> &emplace(const char (&str)[N + 1]) noexcept
-      requires(is_mutable)
+    constexpr StaticStringView<N, IsMutable> &emplace(const char (&str)[N + 1]) noexcept
+      requires(IsMutable)
     {
       return emplace<0>(str);
     }
-    template <size_t beg, std::ranges::input_range range_t>
-    requires(std::same_as<std::ranges::range_value_t<range_t>, char>)
-    constexpr static_string_view<N, is_mutable> &emplace(const range_t &s) noexcept
-      requires(is_mutable)
+    template <size_t Beg, std::ranges::input_range RangeT>
+    requires(std::same_as<std::ranges::range_value_t<RangeT>, char>)
+    constexpr StaticStringView<N, IsMutable> &emplace(const RangeT &s) noexcept
+      requires(IsMutable)
     {
-      std::ranges::copy_n(std::ranges::cbegin(s), N - beg, begin() + beg);
+      std::ranges::copy_n(std::ranges::cbegin(s), N - Beg, begin() + Beg);
       return *this;
     }
-    template <std::ranges::input_range range_t>
-    requires(std::same_as<std::ranges::range_value_t<range_t>, char>)
-    constexpr static_string_view<N, is_mutable> &emplace(const range_t &s) noexcept
-      requires(is_mutable)
+    template <std::ranges::input_range RangeT>
+    requires(std::same_as<std::ranges::range_value_t<RangeT>, char>)
+    constexpr StaticStringView<N, IsMutable> &emplace(const RangeT &s) noexcept
+      requires(IsMutable)
     {
       return emplace<0>(s);
     }
   };
-  export template <size_t N> struct static_string {
+  export template <size_t N> struct StaticString {
     std::array<char, N + 1> __container;
-    template <std::ranges::sized_range range_type>
-    requires(std::assignable_from<char &, std::ranges::range_value_t<range_type>>)
-    constexpr static_string(
-      const range_type &r, char fill_char = '\0', padding_type p = padding_type::back
+    template <std::ranges::sized_range RangeType>
+    requires(std::assignable_from<char &, std::ranges::range_value_t<RangeType>>)
+    constexpr StaticString(
+      const RangeType &r, char fill_char = '\0', padding_type p = padding_type::back
     ) {
       auto r_size = std::ranges::size(r);
       if (r_size >= N) {
@@ -121,11 +121,11 @@ namespace jowi::generic {
       }
       __container[N] = '\0';
     }
-    constexpr static_string(const char (&s)[N + 1]) {
+    constexpr StaticString(const char (&s)[N + 1]) {
       std::ranges::copy_n(std::ranges::begin(s), N, __container.begin());
       __container[N] = '\0';
     }
-    constexpr static_string(char fill_char = ' ') {
+    constexpr StaticString(char fill_char = ' ') {
       std::ranges::fill_n(__container.begin(), N, fill_char);
       __container[N] = '\0';
     }
@@ -147,13 +147,13 @@ namespace jowi::generic {
         return std::nullopt;
       }
     }
-    constexpr operator static_string_view<N, false>() const noexcept {
+    constexpr operator StaticStringView<N, false>() const noexcept {
       return borrow();
     }
-    constexpr operator static_string_view<N, true>() noexcept {
+    constexpr operator StaticStringView<N, true>() noexcept {
       return borrow_mut();
     }
-    constexpr operator static_string_view<N, false>() noexcept {
+    constexpr operator StaticStringView<N, false>() noexcept {
       return borrow();
     }
 
@@ -181,84 +181,84 @@ namespace jowi::generic {
     constexpr std::string as_string() const {
       return std::string{begin(), begin() + N};
     }
-    template <size_t begin_pos, size_t length> constexpr static_string_view<length, true> substr() {
-      return borrow_mut().template substr<begin_pos, length>();
+    template <size_t BeginPos, size_t Length> constexpr StaticStringView<Length, true> substr() {
+      return borrow_mut().template substr<BeginPos, Length>();
     }
-    template <size_t begin_pos, size_t length> requires(begin_pos + length < N)
-    constexpr static_string_view<length, false> substr() const {
-      return borrow().template substr<begin_pos, length>();
+    template <size_t BeginPos, size_t Length> requires(BeginPos + Length < N)
+    constexpr StaticStringView<Length, false> substr() const {
+      return borrow().template substr<BeginPos, Length>();
     }
-    template <size_t new_size>
-    constexpr generic::static_string<new_size> resize(
+    template <size_t NewSize>
+    constexpr StaticString<NewSize> resize(
       char fill_char = '\0', padding_type p = padding_type::back
-    ) const requires(new_size >= N)
+    ) const requires(NewSize >= N)
     {
-      return generic::static_string<new_size>{
+      return StaticString<NewSize>{
         std::ranges::subrange{begin(), begin() + N}, fill_char, p
       };
     }
-    template <size_t new_size> requires(new_size < N)
-    constexpr generic::static_string<new_size> resize() const {
-      return generic::static_string<new_size>{__container};
+    template <size_t NewSize> requires(NewSize < N)
+    constexpr StaticString<NewSize> resize() const {
+      return StaticString<NewSize>{__container};
     }
 
     // Mutability
-    constexpr static_string_view<N, true> borrow_mut() noexcept {
-      return static_string_view<N, true>{__container.begin(), __container.begin() + N};
+    constexpr StaticStringView<N, true> borrow_mut() noexcept {
+      return StaticStringView<N, true>{__container.begin(), __container.begin() + N};
     }
-    constexpr static_string_view<N, false> borrow() const noexcept {
-      return static_string_view<N, false>{__container.begin(), __container.begin() + N};
+    constexpr StaticStringView<N, false> borrow() const noexcept {
+      return StaticStringView<N, false>{__container.begin(), __container.begin() + N};
     }
 
-    template <size_t beg>
-    constexpr static_string<N> &emplace(const char (&str)[N - beg + 1]) noexcept {
-      borrow_mut().template emplace<beg>(str);
+    template <size_t Beg>
+    constexpr StaticString<N> &emplace(const char (&str)[N - Beg + 1]) noexcept {
+      borrow_mut().template emplace<Beg>(str);
       return *this;
     }
-    constexpr static_string<N> &emplace(const char (&str)[N + 1]) noexcept {
+    constexpr StaticString<N> &emplace(const char (&str)[N + 1]) noexcept {
       return emplace<0>(str);
     }
-    template <size_t beg, std::ranges::input_range range_t>
-    requires(std::same_as<std::ranges::range_value_t<range_t>, char>)
-    constexpr static_string<N> &emplace(const range_t &s) noexcept {
-      borrow_mut().template emplace<beg, range_t>(s);
+    template <size_t Beg, std::ranges::input_range RangeT>
+    requires(std::same_as<std::ranges::range_value_t<RangeT>, char>)
+    constexpr StaticString<N> &emplace(const RangeT &s) noexcept {
+      borrow_mut().template emplace<Beg, RangeT>(s);
       return *this;
     }
-    template <std::ranges::input_range range_t>
-    requires(std::same_as<std::ranges::range_value_t<range_t>, char>)
-    constexpr static_string<N> &emplace(const range_t &s) noexcept {
+    template <std::ranges::input_range RangeT>
+    requires(std::same_as<std::ranges::range_value_t<RangeT>, char>)
+    constexpr StaticString<N> &emplace(const RangeT &s) noexcept {
       return emplace<0>(s);
     }
   };
 
   export template <size_t N> requires(N != 0)
-  constexpr generic::static_string<N - 1> make_static_string(const char (&s)[N]) {
-    return generic::static_string<N - 1>{s};
+  constexpr StaticString<N - 1> make_static_string(const char (&s)[N]) {
+    return StaticString<N - 1>{s};
   }
   export template <size_t N, typename... Args>
-  requires(N != 0 && std::is_constructible_v<generic::static_string<N>, Args...>)
-  constexpr generic::static_string<N> make_static_string(Args &&...args) {
-    return generic::static_string<N>{std::forward<Args>(args)...};
+  requires(N != 0 && std::is_constructible_v<StaticString<N>, Args...>)
+  constexpr StaticString<N> make_static_string(Args &&...args) {
+    return StaticString<N>{std::forward<Args>(args)...};
   }
 }
 
-namespace generic = jowi::generic;
 
-template <size_t N, class char_type> struct std::formatter<generic::static_string<N>, char_type> {
+namespace generic = jowi::generic;
+template <size_t N, class CharType> struct std::formatter<generic::StaticString<N>, CharType> {
   constexpr auto parse(auto &ctx) {
     return ctx.begin();
   }
-  constexpr auto format(const generic::static_string<N> &v, auto &ctx) const {
+  constexpr auto format(const generic::StaticString<N> &v, auto &ctx) const {
     return std::format_to(ctx.out(), "{}", v.as_view());
   }
 };
 
-template <size_t N, bool is_mutable, class char_type>
-struct std::formatter<generic::static_string_view<N, is_mutable>, char_type> {
+template <size_t N, bool IsMutable, class CharType>
+struct std::formatter<generic::StaticStringView<N, IsMutable>, CharType> {
   constexpr auto parse(auto &ctx) {
     return ctx.begin();
   }
-  constexpr auto format(const generic::static_string_view<N, is_mutable> &v, auto &ctx) const {
+  constexpr auto format(const generic::StaticStringView<N, IsMutable> &v, auto &ctx) const {
     return std::format_to(ctx.out(), "{}", v.as_view());
   }
 };
