@@ -12,10 +12,17 @@ namespace jowi::generic {
   public:
     UniqueHandle(ValueType v, Destructor d) : __v{v}, __d{d} {}
     UniqueHandle(const UniqueHandle &) = delete;
-    UniqueHandle(UniqueHandle &&o) : __v{std::move(o.__v)}, __d{o.__d} {}
+    UniqueHandle(UniqueHandle &&o) : __v{std::move(o.__v)}, __d{o.__d} {
+      if (o.__v) {
+        o.__v.reset();
+      }
+    }
     UniqueHandle &operator=(const UniqueHandle &o) = delete;
     UniqueHandle &operator=(UniqueHandle &&o) {
       __v = std::move(o.__v);
+      if (o.__v) {
+        o.__v.reset();
+      }
       return *this;
     }
 
@@ -25,7 +32,7 @@ namespace jowi::generic {
     const ValueType &get() const {
       return __v.value();
     }
-    ValueType get_or(ValueType fallback_value) const noexcept {
+    ValueType get_or(ValueType fallback_value) const {
       return __v.value_or(fallback_value);
     }
     ValueType release() {
@@ -38,6 +45,7 @@ namespace jowi::generic {
     ~UniqueHandle() {
       if (__v) {
         __d(std::move(__v).value());
+        __v.reset();
       }
     }
 
