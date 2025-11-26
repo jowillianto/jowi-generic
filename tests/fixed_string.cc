@@ -7,23 +7,23 @@ namespace test_lib = jowi::test_lib;
 namespace generic = jowi::generic;
 
 JOWI_ADD_TEST(string_always_ends_with_null) {
-  generic::fixed_string<10> fs{"hello"};
+  generic::FixedString<10> fs{"hello"};
   // The buffer should always have null terminator at the end
   test_lib::assert_equal(fs.c_str()[fs.length()], '\0');
 
   // Even empty string should be null terminated
-  generic::fixed_string<5> empty_fs;
+  generic::FixedString<5> empty_fs;
   test_lib::assert_equal(empty_fs.c_str()[0], '\0');
 }
 
 JOWI_ADD_TEST(end_is_always_accessible_and_dereferencable) {
-  generic::fixed_string<10> fs{"test"};
+  generic::FixedString<10> fs{"test"};
 
   // end() should be dereferenceable and point to null terminator
   test_lib::assert_equal(*fs.end(), '\0');
 
   // Should work for empty string too
-  generic::fixed_string<5> empty_fs;
+  generic::FixedString<5> empty_fs;
   test_lib::assert_equal(*empty_fs.end(), '\0');
 
   // Should work after modifications
@@ -32,7 +32,7 @@ JOWI_ADD_TEST(end_is_always_accessible_and_dereferencable) {
 }
 
 JOWI_ADD_TEST(emplace_back_increases_size_until_limit) {
-  generic::fixed_string<5> fs;
+  generic::FixedString<5> fs;
   test_lib::assert_equal(fs.size(), 0u);
 
   // Add characters one by one
@@ -61,7 +61,7 @@ JOWI_ADD_TEST(emplace_back_increases_size_until_limit) {
 }
 
 JOWI_ADD_TEST(emplace_format_formats_up_to_size) {
-  generic::fixed_string<10> fs;
+  generic::FixedString<10> fs;
 
   // Format string that fits
   fs.emplace_format("{}", "hello");
@@ -80,7 +80,7 @@ JOWI_ADD_TEST(emplace_format_formats_up_to_size) {
 }
 
 JOWI_ADD_TEST(end_is_always_null_terminator) {
-  generic::fixed_string<8> fs{"abc"};
+  generic::FixedString<8> fs{"abc"};
   test_lib::assert_equal(*fs.end(), '\0');
 
   // Add more characters
@@ -97,7 +97,7 @@ JOWI_ADD_TEST(end_is_always_null_terminator) {
 }
 
 JOWI_ADD_TEST(begin_end_represents_string_without_null) {
-  generic::fixed_string<10> fs{"world"};
+  generic::FixedString<10> fs{"world"};
 
   // Distance between begin and end should equal length
   test_lib::assert_equal(fs.end() - fs.begin(), static_cast<ptrdiff_t>(fs.length()));
@@ -110,13 +110,13 @@ JOWI_ADD_TEST(begin_end_represents_string_without_null) {
   test_lib::assert_equal(*fs.end(), '\0');
 
   // Test with empty string
-  generic::fixed_string<5> empty_fs;
+  generic::FixedString<5> empty_fs;
   test_lib::assert_equal(empty_fs.end() - empty_fs.begin(), 0);
   test_lib::assert_equal(*empty_fs.end(), '\0');
 }
 
 JOWI_ADD_TEST(string_view_conversion_excludes_null) {
-  generic::fixed_string<15> fs{"test string"};
+  generic::FixedString<15> fs{"test string"};
 
   std::string_view sv = fs;
   test_lib::assert_equal(sv.length(), fs.length());
@@ -127,7 +127,7 @@ JOWI_ADD_TEST(string_view_conversion_excludes_null) {
 }
 
 JOWI_ADD_TEST(truncate_resets_to_empty_with_null_terminator) {
-  generic::fixed_string<10> fs{"hello"};
+  generic::FixedString<10> fs{"hello"};
   test_lib::assert_equal(fs.size(), 5u);
 
   fs.truncate();
@@ -140,7 +140,7 @@ JOWI_ADD_TEST(truncate_resets_to_empty_with_null_terminator) {
 }
 
 JOWI_ADD_TEST(equality_operator_same_content) {
-  generic::fixed_string<10> fs{"hello"};
+  generic::FixedString<10> fs{"hello"};
   std::string_view sv{"hello"};
 
   test_lib::assert_equal(fs == sv, true);
@@ -148,7 +148,7 @@ JOWI_ADD_TEST(equality_operator_same_content) {
 }
 
 JOWI_ADD_TEST(equality_operator_different_content) {
-  generic::fixed_string<10> fs{"hello"};
+  generic::FixedString<10> fs{"hello"};
   std::string_view sv{"world"};
 
   test_lib::assert_equal(fs == sv, false);
@@ -156,14 +156,14 @@ JOWI_ADD_TEST(equality_operator_different_content) {
 }
 
 JOWI_ADD_TEST(equality_operator_different_length) {
-  generic::fixed_string<10> fs{"hello"};
+  generic::FixedString<10> fs{"hello"};
 
   test_lib::assert_equal(fs == "hi", false);
   test_lib::assert_equal(fs == "hello world", false);
 }
 
 JOWI_ADD_TEST(equality_operator_empty_strings) {
-  generic::fixed_string<10> fs;
+  generic::FixedString<10> fs;
   std::string_view empty_sv{""};
 
   test_lib::assert_equal(fs == empty_sv, true);
@@ -171,7 +171,7 @@ JOWI_ADD_TEST(equality_operator_empty_strings) {
 }
 
 JOWI_ADD_TEST(equality_operator_after_modifications) {
-  generic::fixed_string<10> fs;
+  generic::FixedString<10> fs;
   fs.emplace_format("{}", "test");
 
   test_lib::assert_equal(fs == "test", true);
@@ -182,12 +182,12 @@ JOWI_ADD_TEST(equality_operator_after_modifications) {
 }
 
 JOWI_ADD_TEST(construction_with_overflowing_string) {
-  generic::fixed_string<5> fs{std::string{"HELLO WORLD"}};
+  generic::FixedString<5> fs{std::string{"HELLO WORLD"}};
   test_lib::assert_equal(fs, "HELLO");
 }
 
 JOWI_ADD_TEST(construction_with_undeflow_string) {
-  generic::fixed_string<10> fs{std::string{"HELLO"}};
+  generic::FixedString<10> fs{std::string{"HELLO"}};
   test_lib::assert_equal(fs, "HELLO");
   test_lib::assert_equal(fs.length(), 5);
 }

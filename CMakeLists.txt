@@ -15,13 +15,10 @@ target_sources(${PROJECT_NAME}
     FILES
         ${CMAKE_CURRENT_LIST_DIR}/src/fixed_string.cc
         ${CMAKE_CURRENT_LIST_DIR}/src/is_formattable_error.cc
-        ${CMAKE_CURRENT_LIST_DIR}/src/is_number.cc
         ${CMAKE_CURRENT_LIST_DIR}/src/key_vector.cc
         ${CMAKE_CURRENT_LIST_DIR}/src/main.cc
-        ${CMAKE_CURRENT_LIST_DIR}/src/prec_fp.cc
-        ${CMAKE_CURRENT_LIST_DIR}/src/static_pref_cp.cc
-        ${CMAKE_CURRENT_LIST_DIR}/src/static_string.cc
         ${CMAKE_CURRENT_LIST_DIR}/src/unique_handle.cc
+        ${CMAKE_CURRENT_LIST_DIR}/src/atomic.cc
         ${CMAKE_CURRENT_LIST_DIR}/src/variant.cc
 )
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_23)

@@ -8,25 +8,25 @@ namespace test_lib = jowi::test_lib;
 namespace generic = jowi::generic;
 
 JOWI_ADD_TEST(key_vector_default_constructor) {
-  generic::key_vector<int, std::string> kv;
+  generic::KeyVector<int, std::string> kv;
   test_lib::assert_equal(kv.size(), 0u);
   test_lib::assert_equal(kv.empty(), true);
 }
 
 JOWI_ADD_TEST(key_vector_initializer_list_constructor) {
-  generic::key_vector<int, std::string> kv{{1, "one"}, {2, "two"}, {3, "three"}};
+  generic::KeyVector<int, std::string> kv{{1, "one"}, {2, "two"}, {3, "three"}};
   test_lib::assert_equal(kv.size(), 3u);
   test_lib::assert_equal(kv.empty(), false);
 }
 
 JOWI_ADD_TEST(key_vector_container_constructor) {
   std::vector<std::pair<int, std::string>> container{{10, "ten"}, {20, "twenty"}};
-  generic::key_vector<int, std::string> kv{std::move(container)};
+  generic::KeyVector<int, std::string> kv{std::move(container)};
   test_lib::assert_equal(kv.size(), 2u);
 }
 
 JOWI_ADD_TEST(key_vector_get_existing_key) {
-  generic::key_vector<int, std::string> kv{{1, "one"}, {2, "two"}, {3, "three"}};
+  generic::KeyVector<int, std::string> kv{{1, "one"}, {2, "two"}, {3, "three"}};
 
   auto result = kv.get(2);
   test_lib::assert_equal(result.has_value(), true);
@@ -34,14 +34,14 @@ JOWI_ADD_TEST(key_vector_get_existing_key) {
 }
 
 JOWI_ADD_TEST(key_vector_get_nonexistent_key) {
-  generic::key_vector<int, std::string> kv{{1, "one"}, {2, "two"}};
+  generic::KeyVector<int, std::string> kv{{1, "one"}, {2, "two"}};
 
   auto result = kv.get(99);
   test_lib::assert_equal(result.has_value(), false);
 }
 
 JOWI_ADD_TEST(key_vector_const_get) {
-  const generic::key_vector<int, std::string> kv{{1, "one"}, {2, "two"}};
+  const generic::KeyVector<int, std::string> kv{{1, "one"}, {2, "two"}};
 
   auto result = kv.get(1);
   test_lib::assert_equal(result.has_value(), true);
@@ -49,7 +49,7 @@ JOWI_ADD_TEST(key_vector_const_get) {
 }
 
 JOWI_ADD_TEST(key_vector_operator_bracket) {
-  generic::key_vector<int, std::string> kv{{5, "five"}, {10, "ten"}};
+  generic::KeyVector<int, std::string> kv{{5, "five"}, {10, "ten"}};
 
   auto result = kv[5];
   test_lib::assert_equal(result.has_value(), true);
@@ -60,7 +60,7 @@ JOWI_ADD_TEST(key_vector_operator_bracket) {
 }
 
 JOWI_ADD_TEST(key_vector_const_operator_bracket) {
-  const generic::key_vector<int, std::string> kv{{7, "seven"}};
+  const generic::KeyVector<int, std::string> kv{{7, "seven"}};
 
   auto result = kv[7];
   test_lib::assert_equal(result.has_value(), true);
@@ -68,7 +68,7 @@ JOWI_ADD_TEST(key_vector_const_operator_bracket) {
 }
 
 JOWI_ADD_TEST(key_vector_emplace_new_key) {
-  generic::key_vector<int, std::string> kv;
+  generic::KeyVector<int, std::string> kv;
 
   auto &value = kv.emplace(42, "forty-two");
   test_lib::assert_equal(value, "forty-two");
@@ -80,7 +80,7 @@ JOWI_ADD_TEST(key_vector_emplace_new_key) {
 }
 
 JOWI_ADD_TEST(key_vector_emplace_existing_key_replaces) {
-  generic::key_vector<int, std::string> kv{{1, "original"}};
+  generic::KeyVector<int, std::string> kv{{1, "original"}};
 
   auto &value = kv.emplace(1, "replaced");
   test_lib::assert_equal(value, "replaced");
@@ -91,7 +91,7 @@ JOWI_ADD_TEST(key_vector_emplace_existing_key_replaces) {
 }
 
 JOWI_ADD_TEST(key_vector_insert) {
-  generic::key_vector<int, std::string> kv;
+  generic::KeyVector<int, std::string> kv;
 
   auto &value = kv.insert(100, "hundred");
   test_lib::assert_equal(value, "hundred");
@@ -99,7 +99,7 @@ JOWI_ADD_TEST(key_vector_insert) {
 }
 
 JOWI_ADD_TEST(key_vector_remove_existing) {
-  generic::key_vector<int, std::string> kv{{1, "one"}, {2, "two"}, {3, "three"}};
+  generic::KeyVector<int, std::string> kv{{1, "one"}, {2, "two"}, {3, "three"}};
 
   auto removed = kv.remove(2);
   test_lib::assert_equal(removed.has_value(), true);
@@ -112,7 +112,7 @@ JOWI_ADD_TEST(key_vector_remove_existing) {
 }
 
 JOWI_ADD_TEST(key_vector_remove_nonexistent) {
-  generic::key_vector<int, std::string> kv{{1, "one"}};
+  generic::KeyVector<int, std::string> kv{{1, "one"}};
 
   auto removed = kv.remove(999);
   test_lib::assert_equal(removed.has_value(), false);
@@ -120,7 +120,7 @@ JOWI_ADD_TEST(key_vector_remove_nonexistent) {
 }
 
 JOWI_ADD_TEST(key_vector_iteration) {
-  generic::key_vector<int, std::string> kv{{1, "one"}, {2, "two"}, {3, "three"}};
+  generic::KeyVector<int, std::string> kv{{1, "one"}, {2, "two"}, {3, "three"}};
 
   int count = 0;
   for (const auto &[key, value] : kv) {
@@ -133,7 +133,7 @@ JOWI_ADD_TEST(key_vector_iteration) {
 }
 
 JOWI_ADD_TEST(key_vector_const_iteration) {
-  const generic::key_vector<int, std::string> kv{{10, "ten"}, {20, "twenty"}};
+  const generic::KeyVector<int, std::string> kv{{10, "ten"}, {20, "twenty"}};
 
   int count = 0;
   for (const auto &[key, value] : kv) {
@@ -143,7 +143,7 @@ JOWI_ADD_TEST(key_vector_const_iteration) {
 }
 
 JOWI_ADD_TEST(key_vector_keys_view) {
-  generic::key_vector<int, std::string> kv{{5, "five"}, {15, "fifteen"}, {25, "twenty-five"}};
+  generic::KeyVector<int, std::string> kv{{5, "five"}, {15, "fifteen"}, {25, "twenty-five"}};
 
   auto keys_view = kv.keys();
   std::vector<int> keys_vec;
@@ -160,7 +160,7 @@ JOWI_ADD_TEST(key_vector_keys_view) {
 }
 
 JOWI_ADD_TEST(key_vector_string_keys) {
-  generic::key_vector<std::string, int> kv{{"hello", 1}, {"world", 2}, {"test", 3}};
+  generic::KeyVector<std::string, int> kv{{"hello", 1}, {"world", 2}, {"test", 3}};
 
   auto result = kv.get("world");
   test_lib::assert_equal(result.has_value(), true);
@@ -171,7 +171,7 @@ JOWI_ADD_TEST(key_vector_string_keys) {
 }
 
 JOWI_ADD_TEST(key_vector_modification_through_reference) {
-  generic::key_vector<int, std::string> kv{{1, "original"}};
+  generic::KeyVector<int, std::string> kv{{1, "original"}};
 
   auto result = kv.get(1);
   test_lib::assert_equal(result.has_value(), true);
@@ -184,7 +184,7 @@ JOWI_ADD_TEST(key_vector_modification_through_reference) {
 }
 
 JOWI_ADD_TEST(key_vector_comparable_concept) {
-  generic::key_vector<int, std::string> kv{{42, "answer"}};
+  generic::KeyVector<int, std::string> kv{{42, "answer"}};
 
   // Test that we can use different but comparable types
   long long big_key = 42LL;
@@ -194,7 +194,7 @@ JOWI_ADD_TEST(key_vector_comparable_concept) {
 }
 
 JOWI_ADD_TEST(key_vector_empty_after_removal) {
-  generic::key_vector<int, std::string> kv{{1, "only"}};
+  generic::KeyVector<int, std::string> kv{{1, "only"}};
 
   test_lib::assert_equal(kv.empty(), false);
 

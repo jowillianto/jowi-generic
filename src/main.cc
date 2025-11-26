@@ -1,10 +1,6 @@
 export module jowi.generic;
 export import :variant;
-export import :prec_fp;
-export import :static_prec_fp;
-export import :is_number;
-export import :static_string;
-export import :is_formattable_error;
 export import :key_vector;
 export import :fixed_string;
+export import :is_formattable_error;
 export import :unique_handle;

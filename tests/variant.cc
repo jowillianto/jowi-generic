@@ -9,7 +9,7 @@ namespace generic = jowi::generic;
 ;
 
 JOWI_ADD_TEST(variant_index_checking) {
-  generic::variant<int, std::string, double> v{42};
+  generic::Variant<int, std::string, double> v{42};
   test_lib::assert_equal(v.index(), 0);
 
   v = std::string("hello");
@@ -26,14 +26,14 @@ JOWI_ADD_TEST(variant_index_checking) {
 }
 
 JOWI_ADD_TEST(variant_is_correct_type) {
-  generic::variant<int, std::string, double> v{42};
+  generic::Variant<int, std::string, double> v{42};
   test_lib::assert_true(v.is<int>());
   test_lib::assert_false(v.is<std::string>());
   test_lib::assert_false(v.is<double>());
 }
 
 JOWI_ADD_TEST(variant_is_after_type_change) {
-  generic::variant<int, std::string, double> v{42};
+  generic::Variant<int, std::string, double> v{42};
   test_lib::assert_true(v.is<int>());
 
   v = std::string("hello");
@@ -48,27 +48,27 @@ JOWI_ADD_TEST(variant_is_after_type_change) {
 }
 
 JOWI_ADD_TEST(variant_as_successful_conversion) {
-  generic::variant<int, std::string, double> v{42};
+  generic::Variant<int, std::string, double> v{42};
   auto result = v.as<int>();
   test_lib::assert_true(result.has_value());
   test_lib::assert_equal(result->get(), 42);
 }
 
 JOWI_ADD_TEST(variant_as_failed_conversion) {
-  generic::variant<int, std::string, double> v{42};
+  generic::Variant<int, std::string, double> v{42};
   auto result = v.as<std::string>();
   test_lib::assert_false(result.has_value());
 }
 
 JOWI_ADD_TEST(variant_as_const_version) {
-  const generic::variant<int, std::string, double> v{std::string("hello")};
+  const generic::Variant<int, std::string, double> v{std::string("hello")};
   auto result = v.as<std::string>();
   test_lib::assert_true(result.has_value());
   test_lib::assert_equal(result->get(), std::string("hello"));
 }
 
 JOWI_ADD_TEST(variant_as_reference_modification) {
-  generic::variant<int, std::string, double> v{std::string("original")};
+  generic::Variant<int, std::string, double> v{std::string("original")};
   auto result = v.as<std::string>();
   test_lib::assert_true(result.has_value());
 
@@ -81,7 +81,7 @@ JOWI_ADD_TEST(variant_as_reference_modification) {
 }
 
 JOWI_ADD_TEST(variant_emplace_functionality) {
-  generic::variant<int, std::string, double> v{42};
+  generic::Variant<int, std::string, double> v{42};
   test_lib::assert_true(v.is<int>());
 
   v.emplace<std::string>("emplaced");
@@ -94,7 +94,7 @@ JOWI_ADD_TEST(variant_emplace_functionality) {
 }
 
 JOWI_ADD_TEST(variant_visit_single_function) {
-  generic::variant<int, std::string, double> v{42};
+  generic::Variant<int, std::string, double> v{42};
 
   int result = v.visit([](auto &value) -> int {
     if constexpr (std::same_as<std::decay_t<decltype(value)>, int>) {
@@ -110,7 +110,7 @@ JOWI_ADD_TEST(variant_visit_single_function) {
 }
 
 JOWI_ADD_TEST(variant_visit_overload_functions) {
-  generic::variant<int, std::string, double> v{std::string("hello")};
+  generic::Variant<int, std::string, double> v{std::string("hello")};
 
   v.visit(
     [](int &i) { /* handle int */ },
@@ -120,7 +120,7 @@ JOWI_ADD_TEST(variant_visit_overload_functions) {
 }
 
 JOWI_ADD_TEST(variant_visit_overload_different_types) {
-  generic::variant<int, std::string, double> v{3.14};
+  generic::Variant<int, std::string, double> v{3.14};
 
   v.visit(
     [](int &i) { /* handle int */ },
@@ -130,7 +130,7 @@ JOWI_ADD_TEST(variant_visit_overload_different_types) {
 }
 
 JOWI_ADD_TEST(variant_visit_const_version) {
-  const generic::variant<int, std::string, double> v{3.14159};
+  const generic::Variant<int, std::string, double> v{3.14159};
 
   v.visit(
     [](const int &i) { /* handle const int */ },
@@ -141,7 +141,7 @@ JOWI_ADD_TEST(variant_visit_const_version) {
 
 JOWI_ADD_TEST(variant_visit_rvalue_version) {
 
-  generic::variant<int, std::string, double>{std::string("moved")}.visit(
+  generic::Variant<int, std::string, double>{std::string("moved")}.visit(
     [](int &&i) { /* handle int rvalue */ },
     [](std::string &&s) { /* handle string rvalue */ },
     [](double &&d) { /* handle double rvalue */ }
